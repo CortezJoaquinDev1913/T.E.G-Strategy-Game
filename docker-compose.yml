@@ -1,0 +1,25 @@
+# PostgreSQL local para desarrollo. Credenciales SOLO para uso local.
+# Cadena de conexión que usa la API (appsettings.Development.json):
+#   Host=localhost;Port=5432;Database=teg;Username=teg;Password=teg
+# Se puede sobreescribir con la variable de entorno ConnectionStrings__Teg.
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: teg-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: teg
+      POSTGRES_PASSWORD: teg
+      POSTGRES_DB: teg
+    ports:
+      - "5432:5432"
+    volumes:
+      - teg-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U teg -d teg"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  teg-pgdata:

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Teg.Domain</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- docs/mapa.json is the ONLY copy of the map; it is linked, never duplicated. -->
+    <EmbeddedResource Include="..\..\..\docs\mapa.json" LogicalName="mapa.json" Link="Map\mapa.json" />
+  </ItemGroup>
+
+</Project>

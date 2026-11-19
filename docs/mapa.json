@@ -1,0 +1,901 @@
+{
+  "version": 1,
+  "continents": [
+    {
+      "id": "america-del-norte",
+      "name": "América del Norte",
+      "bonus": 5,
+      "territories": [
+        "borealia",
+        "cabo-helado",
+        "lagos-norte",
+        "costa-ambar",
+        "sierra-roja",
+        "llanura-alta",
+        "valle-brumoso",
+        "golfo-dorado",
+        "peninsula-sol",
+        "istmo-verde"
+      ]
+    },
+    {
+      "id": "america-del-sur",
+      "name": "América del Sur",
+      "bonus": 3,
+      "territories": [
+        "cuenca-esmeralda",
+        "cordillera-gris",
+        "selva-madre",
+        "costa-cobriza",
+        "pampa-larga",
+        "tierra-austral"
+      ]
+    },
+    {
+      "id": "europa",
+      "name": "Europa",
+      "bonus": 5,
+      "territories": [
+        "brumaria",
+        "isla-niebla",
+        "albaran",
+        "cierzo",
+        "valdoria",
+        "montealto",
+        "estepa-norte",
+        "marca-del-alba",
+        "puerto-sirio"
+      ]
+    },
+    {
+      "id": "africa",
+      "name": "África",
+      "bonus": 3,
+      "territories": [
+        "dunas-rojas",
+        "oasis-largo",
+        "costa-salina",
+        "savana-alta",
+        "selva-umbria",
+        "lagos-altos",
+        "cabo-tormenta"
+      ]
+    },
+    {
+      "id": "asia",
+      "name": "Asia",
+      "bonus": 7,
+      "territories": [
+        "taiga-eterna",
+        "estepa-alta",
+        "montes-jade",
+        "cumbres-azur",
+        "desierto-ocre",
+        "meseta-zafiro",
+        "sierra-ambar",
+        "costa-loto",
+        "valle-bambu",
+        "llanos-marfil",
+        "cuenca-azafran",
+        "delta-perla",
+        "puerto-coral",
+        "estrecho-lunar"
+      ]
+    },
+    {
+      "id": "oceania",
+      "name": "Oceanía",
+      "bonus": 2,
+      "territories": [
+        "isla-tortuga",
+        "costa-arrecife",
+        "tierra-roja",
+        "archipielago-aurora"
+      ]
+    }
+  ],
+  "territories": [
+    {
+      "id": "borealia",
+      "name": "Borealia",
+      "continent": "america-del-norte",
+      "symbol": "galeon"
+    },
+    {
+      "id": "cabo-helado",
+      "name": "Cabo Helado",
+      "continent": "america-del-norte",
+      "symbol": "globo"
+    },
+    {
+      "id": "lagos-norte",
+      "name": "Lagos del Norte",
+      "continent": "america-del-norte",
+      "symbol": "canon"
+    },
+    {
+      "id": "costa-ambar",
+      "name": "Costa Ámbar",
+      "continent": "america-del-norte",
+      "symbol": "galeon"
+    },
+    {
+      "id": "sierra-roja",
+      "name": "Sierra Roja",
+      "continent": "america-del-norte",
+      "symbol": "globo"
+    },
+    {
+      "id": "llanura-alta",
+      "name": "Llanura Alta",
+      "continent": "america-del-norte",
+      "symbol": "canon"
+    },
+    {
+      "id": "valle-brumoso",
+      "name": "Valle Brumoso",
+      "continent": "america-del-norte",
+      "symbol": "galeon"
+    },
+    {
+      "id": "golfo-dorado",
+      "name": "Golfo Dorado",
+      "continent": "america-del-norte",
+      "symbol": "globo"
+    },
+    {
+      "id": "peninsula-sol",
+      "name": "Península del Sol",
+      "continent": "america-del-norte",
+      "symbol": "canon"
+    },
+    {
+      "id": "istmo-verde",
+      "name": "Istmo Verde",
+      "continent": "america-del-norte",
+      "symbol": "galeon"
+    },
+    {
+      "id": "cuenca-esmeralda",
+      "name": "Cuenca Esmeralda",
+      "continent": "america-del-sur",
+      "symbol": "globo"
+    },
+    {
+      "id": "cordillera-gris",
+      "name": "Cordillera Gris",
+      "continent": "america-del-sur",
+      "symbol": "canon"
+    },
+    {
+      "id": "selva-madre",
+      "name": "Selva Madre",
+      "continent": "america-del-sur",
+      "symbol": "galeon"
+    },
+    {
+      "id": "costa-cobriza",
+      "name": "Costa Cobriza",
+      "continent": "america-del-sur",
+      "symbol": "globo"
+    },
+    {
+      "id": "pampa-larga",
+      "name": "Pampa Larga",
+      "continent": "america-del-sur",
+      "symbol": "canon"
+    },
+    {
+      "id": "tierra-austral",
+      "name": "Tierra Austral",
+      "continent": "america-del-sur",
+      "symbol": "galeon"
+    },
+    {
+      "id": "brumaria",
+      "name": "Brumaria",
+      "continent": "europa",
+      "symbol": "globo"
+    },
+    {
+      "id": "isla-niebla",
+      "name": "Isla Niebla",
+      "continent": "europa",
+      "symbol": "canon"
+    },
+    {
+      "id": "albaran",
+      "name": "Albarán",
+      "continent": "europa",
+      "symbol": "galeon"
+    },
+    {
+      "id": "cierzo",
+      "name": "Cierzo",
+      "continent": "europa",
+      "symbol": "globo"
+    },
+    {
+      "id": "valdoria",
+      "name": "Valdoria",
+      "continent": "europa",
+      "symbol": "canon"
+    },
+    {
+      "id": "montealto",
+      "name": "Montealto",
+      "continent": "europa",
+      "symbol": "galeon"
+    },
+    {
+      "id": "estepa-norte",
+      "name": "Estepa Norte",
+      "continent": "europa",
+      "symbol": "globo"
+    },
+    {
+      "id": "marca-del-alba",
+      "name": "Marca del Alba",
+      "continent": "europa",
+      "symbol": "canon"
+    },
+    {
+      "id": "puerto-sirio",
+      "name": "Puerto Sirio",
+      "continent": "europa",
+      "symbol": "galeon"
+    },
+    {
+      "id": "dunas-rojas",
+      "name": "Dunas Rojas",
+      "continent": "africa",
+      "symbol": "globo"
+    },
+    {
+      "id": "oasis-largo",
+      "name": "Oasis Largo",
+      "continent": "africa",
+      "symbol": "canon"
+    },
+    {
+      "id": "costa-salina",
+      "name": "Costa Salina",
+      "continent": "africa",
+      "symbol": "galeon"
+    },
+    {
+      "id": "savana-alta",
+      "name": "Savana Alta",
+      "continent": "africa",
+      "symbol": "globo"
+    },
+    {
+      "id": "selva-umbria",
+      "name": "Selva Umbría",
+      "continent": "africa",
+      "symbol": "canon"
+    },
+    {
+      "id": "lagos-altos",
+      "name": "Lagos Altos",
+      "continent": "africa",
+      "symbol": "galeon"
+    },
+    {
+      "id": "cabo-tormenta",
+      "name": "Cabo Tormenta",
+      "continent": "africa",
+      "symbol": "globo"
+    },
+    {
+      "id": "taiga-eterna",
+      "name": "Taiga Eterna",
+      "continent": "asia",
+      "symbol": "canon"
+    },
+    {
+      "id": "estepa-alta",
+      "name": "Estepa Alta",
+      "continent": "asia",
+      "symbol": "galeon"
+    },
+    {
+      "id": "montes-jade",
+      "name": "Montes de Jade",
+      "continent": "asia",
+      "symbol": "globo"
+    },
+    {
+      "id": "cumbres-azur",
+      "name": "Cumbres Azur",
+      "continent": "asia",
+      "symbol": "canon"
+    },
+    {
+      "id": "desierto-ocre",
+      "name": "Desierto Ocre",
+      "continent": "asia",
+      "symbol": "galeon"
+    },
+    {
+      "id": "meseta-zafiro",
+      "name": "Meseta Zafiro",
+      "continent": "asia",
+      "symbol": "globo"
+    },
+    {
+      "id": "sierra-ambar",
+      "name": "Sierra Ámbar",
+      "continent": "asia",
+      "symbol": "canon"
+    },
+    {
+      "id": "costa-loto",
+      "name": "Costa Loto",
+      "continent": "asia",
+      "symbol": "galeon"
+    },
+    {
+      "id": "valle-bambu",
+      "name": "Valle Bambú",
+      "continent": "asia",
+      "symbol": "globo"
+    },
+    {
+      "id": "llanos-marfil",
+      "name": "Llanos Marfil",
+      "continent": "asia",
+      "symbol": "canon"
+    },
+    {
+      "id": "cuenca-azafran",
+      "name": "Cuenca Azafrán",
+      "continent": "asia",
+      "symbol": "galeon"
+    },
+    {
+      "id": "delta-perla",
+      "name": "Delta Perla",
+      "continent": "asia",
+      "symbol": "globo"
+    },
+    {
+      "id": "puerto-coral",
+      "name": "Puerto Coral",
+      "continent": "asia",
+      "symbol": "canon"
+    },
+    {
+      "id": "estrecho-lunar",
+      "name": "Estrecho Lunar",
+      "continent": "asia",
+      "symbol": "galeon"
+    },
+    {
+      "id": "isla-tortuga",
+      "name": "Isla Tortuga",
+      "continent": "oceania",
+      "symbol": "globo"
+    },
+    {
+      "id": "costa-arrecife",
+      "name": "Costa Arrecife",
+      "continent": "oceania",
+      "symbol": "canon"
+    },
+    {
+      "id": "tierra-roja",
+      "name": "Tierra Roja",
+      "continent": "oceania",
+      "symbol": "galeon"
+    },
+    {
+      "id": "archipielago-aurora",
+      "name": "Archipiélago Aurora",
+      "continent": "oceania",
+      "symbol": "globo"
+    }
+  ],
+  "borders": [
+    {
+      "a": "albaran",
+      "b": "brumaria",
+      "type": "land"
+    },
+    {
+      "a": "albaran",
+      "b": "cierzo",
+      "type": "land"
+    },
+    {
+      "a": "albaran",
+      "b": "isla-niebla",
+      "type": "bridge"
+    },
+    {
+      "a": "albaran",
+      "b": "valdoria",
+      "type": "land"
+    },
+    {
+      "a": "archipielago-aurora",
+      "b": "cordillera-gris",
+      "type": "bridge"
+    },
+    {
+      "a": "archipielago-aurora",
+      "b": "costa-arrecife",
+      "type": "land"
+    },
+    {
+      "a": "archipielago-aurora",
+      "b": "tierra-roja",
+      "type": "land"
+    },
+    {
+      "a": "borealia",
+      "b": "cabo-helado",
+      "type": "land"
+    },
+    {
+      "a": "borealia",
+      "b": "costa-ambar",
+      "type": "land"
+    },
+    {
+      "a": "borealia",
+      "b": "lagos-norte",
+      "type": "land"
+    },
+    {
+      "a": "brumaria",
+      "b": "estepa-norte",
+      "type": "land"
+    },
+    {
+      "a": "brumaria",
+      "b": "isla-niebla",
+      "type": "bridge"
+    },
+    {
+      "a": "brumaria",
+      "b": "valdoria",
+      "type": "land"
+    },
+    {
+      "a": "cabo-helado",
+      "b": "isla-niebla",
+      "type": "bridge"
+    },
+    {
+      "a": "cabo-helado",
+      "b": "lagos-norte",
+      "type": "land"
+    },
+    {
+      "a": "cabo-helado",
+      "b": "valle-brumoso",
+      "type": "land"
+    },
+    {
+      "a": "cabo-tormenta",
+      "b": "lagos-altos",
+      "type": "land"
+    },
+    {
+      "a": "cabo-tormenta",
+      "b": "selva-umbria",
+      "type": "land"
+    },
+    {
+      "a": "cierzo",
+      "b": "dunas-rojas",
+      "type": "bridge"
+    },
+    {
+      "a": "cierzo",
+      "b": "montealto",
+      "type": "land"
+    },
+    {
+      "a": "cierzo",
+      "b": "valdoria",
+      "type": "land"
+    },
+    {
+      "a": "cordillera-gris",
+      "b": "cuenca-esmeralda",
+      "type": "land"
+    },
+    {
+      "a": "cordillera-gris",
+      "b": "pampa-larga",
+      "type": "land"
+    },
+    {
+      "a": "cordillera-gris",
+      "b": "selva-madre",
+      "type": "land"
+    },
+    {
+      "a": "cordillera-gris",
+      "b": "tierra-austral",
+      "type": "land"
+    },
+    {
+      "a": "costa-ambar",
+      "b": "lagos-norte",
+      "type": "land"
+    },
+    {
+      "a": "costa-ambar",
+      "b": "llanura-alta",
+      "type": "land"
+    },
+    {
+      "a": "costa-ambar",
+      "b": "sierra-roja",
+      "type": "land"
+    },
+    {
+      "a": "costa-arrecife",
+      "b": "isla-tortuga",
+      "type": "land"
+    },
+    {
+      "a": "costa-arrecife",
+      "b": "tierra-roja",
+      "type": "land"
+    },
+    {
+      "a": "costa-cobriza",
+      "b": "costa-salina",
+      "type": "bridge"
+    },
+    {
+      "a": "costa-cobriza",
+      "b": "cuenca-esmeralda",
+      "type": "land"
+    },
+    {
+      "a": "costa-cobriza",
+      "b": "pampa-larga",
+      "type": "land"
+    },
+    {
+      "a": "costa-cobriza",
+      "b": "selva-madre",
+      "type": "land"
+    },
+    {
+      "a": "costa-loto",
+      "b": "cumbres-azur",
+      "type": "land"
+    },
+    {
+      "a": "costa-loto",
+      "b": "delta-perla",
+      "type": "land"
+    },
+    {
+      "a": "costa-loto",
+      "b": "estrecho-lunar",
+      "type": "bridge"
+    },
+    {
+      "a": "costa-loto",
+      "b": "sierra-ambar",
+      "type": "land"
+    },
+    {
+      "a": "costa-salina",
+      "b": "dunas-rojas",
+      "type": "land"
+    },
+    {
+      "a": "costa-salina",
+      "b": "savana-alta",
+      "type": "land"
+    },
+    {
+      "a": "costa-salina",
+      "b": "selva-umbria",
+      "type": "land"
+    },
+    {
+      "a": "cuenca-azafran",
+      "b": "delta-perla",
+      "type": "land"
+    },
+    {
+      "a": "cuenca-azafran",
+      "b": "llanos-marfil",
+      "type": "land"
+    },
+    {
+      "a": "cuenca-azafran",
+      "b": "puerto-coral",
+      "type": "land"
+    },
+    {
+      "a": "cuenca-azafran",
+      "b": "valle-bambu",
+      "type": "land"
+    },
+    {
+      "a": "cuenca-esmeralda",
+      "b": "istmo-verde",
+      "type": "land"
+    },
+    {
+      "a": "cuenca-esmeralda",
+      "b": "selva-madre",
+      "type": "land"
+    },
+    {
+      "a": "cumbres-azur",
+      "b": "montes-jade",
+      "type": "land"
+    },
+    {
+      "a": "cumbres-azur",
+      "b": "sierra-ambar",
+      "type": "land"
+    },
+    {
+      "a": "cumbres-azur",
+      "b": "taiga-eterna",
+      "type": "land"
+    },
+    {
+      "a": "delta-perla",
+      "b": "puerto-coral",
+      "type": "land"
+    },
+    {
+      "a": "delta-perla",
+      "b": "valle-bambu",
+      "type": "land"
+    },
+    {
+      "a": "desierto-ocre",
+      "b": "estepa-alta",
+      "type": "land"
+    },
+    {
+      "a": "desierto-ocre",
+      "b": "llanos-marfil",
+      "type": "land"
+    },
+    {
+      "a": "desierto-ocre",
+      "b": "meseta-zafiro",
+      "type": "land"
+    },
+    {
+      "a": "desierto-ocre",
+      "b": "oasis-largo",
+      "type": "land"
+    },
+    {
+      "a": "desierto-ocre",
+      "b": "puerto-sirio",
+      "type": "land"
+    },
+    {
+      "a": "dunas-rojas",
+      "b": "oasis-largo",
+      "type": "land"
+    },
+    {
+      "a": "dunas-rojas",
+      "b": "savana-alta",
+      "type": "land"
+    },
+    {
+      "a": "estepa-alta",
+      "b": "marca-del-alba",
+      "type": "land"
+    },
+    {
+      "a": "estepa-alta",
+      "b": "meseta-zafiro",
+      "type": "land"
+    },
+    {
+      "a": "estepa-alta",
+      "b": "montes-jade",
+      "type": "land"
+    },
+    {
+      "a": "estepa-alta",
+      "b": "taiga-eterna",
+      "type": "land"
+    },
+    {
+      "a": "estepa-norte",
+      "b": "marca-del-alba",
+      "type": "land"
+    },
+    {
+      "a": "estepa-norte",
+      "b": "taiga-eterna",
+      "type": "land"
+    },
+    {
+      "a": "estepa-norte",
+      "b": "valdoria",
+      "type": "land"
+    },
+    {
+      "a": "estrecho-lunar",
+      "b": "isla-tortuga",
+      "type": "bridge"
+    },
+    {
+      "a": "golfo-dorado",
+      "b": "istmo-verde",
+      "type": "land"
+    },
+    {
+      "a": "golfo-dorado",
+      "b": "llanura-alta",
+      "type": "land"
+    },
+    {
+      "a": "golfo-dorado",
+      "b": "peninsula-sol",
+      "type": "land"
+    },
+    {
+      "a": "golfo-dorado",
+      "b": "valle-brumoso",
+      "type": "land"
+    },
+    {
+      "a": "isla-tortuga",
+      "b": "tierra-roja",
+      "type": "land"
+    },
+    {
+      "a": "istmo-verde",
+      "b": "peninsula-sol",
+      "type": "land"
+    },
+    {
+      "a": "lagos-altos",
+      "b": "oasis-largo",
+      "type": "land"
+    },
+    {
+      "a": "lagos-altos",
+      "b": "savana-alta",
+      "type": "land"
+    },
+    {
+      "a": "lagos-altos",
+      "b": "selva-umbria",
+      "type": "land"
+    },
+    {
+      "a": "lagos-norte",
+      "b": "llanura-alta",
+      "type": "land"
+    },
+    {
+      "a": "lagos-norte",
+      "b": "valle-brumoso",
+      "type": "land"
+    },
+    {
+      "a": "llanos-marfil",
+      "b": "meseta-zafiro",
+      "type": "land"
+    },
+    {
+      "a": "llanos-marfil",
+      "b": "puerto-coral",
+      "type": "land"
+    },
+    {
+      "a": "llanos-marfil",
+      "b": "valle-bambu",
+      "type": "land"
+    },
+    {
+      "a": "llanura-alta",
+      "b": "sierra-roja",
+      "type": "land"
+    },
+    {
+      "a": "llanura-alta",
+      "b": "valle-brumoso",
+      "type": "land"
+    },
+    {
+      "a": "marca-del-alba",
+      "b": "montealto",
+      "type": "land"
+    },
+    {
+      "a": "marca-del-alba",
+      "b": "puerto-sirio",
+      "type": "land"
+    },
+    {
+      "a": "marca-del-alba",
+      "b": "valdoria",
+      "type": "land"
+    },
+    {
+      "a": "meseta-zafiro",
+      "b": "montes-jade",
+      "type": "land"
+    },
+    {
+      "a": "meseta-zafiro",
+      "b": "valle-bambu",
+      "type": "land"
+    },
+    {
+      "a": "montealto",
+      "b": "puerto-sirio",
+      "type": "land"
+    },
+    {
+      "a": "montealto",
+      "b": "valdoria",
+      "type": "land"
+    },
+    {
+      "a": "montes-jade",
+      "b": "sierra-ambar",
+      "type": "land"
+    },
+    {
+      "a": "montes-jade",
+      "b": "taiga-eterna",
+      "type": "land"
+    },
+    {
+      "a": "montes-jade",
+      "b": "valle-bambu",
+      "type": "land"
+    },
+    {
+      "a": "oasis-largo",
+      "b": "puerto-sirio",
+      "type": "land"
+    },
+    {
+      "a": "oasis-largo",
+      "b": "savana-alta",
+      "type": "land"
+    },
+    {
+      "a": "pampa-larga",
+      "b": "selva-madre",
+      "type": "land"
+    },
+    {
+      "a": "pampa-larga",
+      "b": "tierra-austral",
+      "type": "land"
+    },
+    {
+      "a": "peninsula-sol",
+      "b": "sierra-roja",
+      "type": "land"
+    },
+    {
+      "a": "savana-alta",
+      "b": "selva-umbria",
+      "type": "land"
+    },
+    {
+      "a": "sierra-ambar",
+      "b": "valle-bambu",
+      "type": "land"
+    }
+  ]
+}

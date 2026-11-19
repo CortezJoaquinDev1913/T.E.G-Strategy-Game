@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Teg.Api/Teg.Api.csproj" />
+    <Project Path="src/Teg.Application/Teg.Application.csproj" />
+    <Project Path="src/Teg.Domain/Teg.Domain.csproj" />
+    <Project Path="src/Teg.Infrastructure/Teg.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Teg.Api.IntegrationTests/Teg.Api.IntegrationTests.csproj" />
+    <Project Path="tests/Teg.Application.Tests/Teg.Application.Tests.csproj" />
+    <Project Path="tests/Teg.Domain.Tests/Teg.Domain.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -4,6 +4,7 @@ using Teg.Domain.Events;
 using Teg.Domain.Rules;
 using Teg.Domain.State;
 using Teg.Domain.Tests.Support;
+using static Teg.Domain.Tests.Support.CardFixtures;
 using static Teg.Domain.Tests.Support.CombatFixtures;
 using static Teg.Domain.Tests.Support.GameFixtures;
 using static Teg.Domain.Tests.Support.ReinforcementFixtures;
@@ -85,8 +86,8 @@ public sealed class EliminationTests
         var next = transition.State;
 
         Assert.False(next.Participants[1].Eliminated);
-        Assert.Equal(DefendersCards, next.Participants[1].Cards.ToArray());
-        Assert.Equal(AttackersCards, next.Participants[0].Cards.ToArray());
+        Assert.Equal(DefendersCards, HandIds(next, 1));
+        Assert.Equal(AttackersCards, HandIds(next, 0));
         Assert.DoesNotContain(transition.Events, e => e is ParticipantEliminated);
         Assert.False(OwnsNothing(next, 1));
     }
@@ -112,7 +113,7 @@ public sealed class EliminationTests
         var transition = ConquerWithEvents(before, "a", "c");
         var next = transition.State;
 
-        Assert.Equal(["a", "b", "c", "d", "e", "f"], next.Participants[0].Cards.ToArray());
+        Assert.Equal(["a", "b", "c", "d", "e", "f"], HandIds(next, 0));
         Assert.Empty(next.Participants[1].Cards);
         Assert.Equal(
             new ParticipantEliminated(1, 0, DefendersCards.ToValueArray()),
@@ -133,7 +134,7 @@ public sealed class EliminationTests
 
         var next = Conquer(before, "a", "c");
 
-        Assert.Equal(expectedHand, next.Participants[0].Cards.ToArray());
+        Assert.Equal(expectedHand, HandIds(next, 0));
         Assert.Empty(next.Participants[1].Cards);
     }
 
@@ -175,7 +176,7 @@ public sealed class EliminationTests
         var state = NextReinforcementOfTheEliminator(AttackersCards, DefendersCards);
         var traded = ApplyOk(state, Trading(0, "a", "b", "c"), TinyBoard.Map).State; // galeon + globo + cañon
 
-        Assert.Equal(["d", "e", "f"], traded.Participants[0].Cards.ToArray());
+        Assert.Equal(["d", "e", "f"], HandIds(traded, 0));
         Assert.Equal(3 + 4, traded.Turn.FreeArmies); // 5 countries = 3 armies, plus the first trade of the heir
         Assert.Equal(GamePhase.Attack, PlaceWholePool(traded, TinyBoard.Map).Phase); // and now the pool can be placed
     }

@@ -14,7 +14,8 @@ namespace Teg.Domain.Tests.Cards;
 /// E8 / R§7: in the Reinforcement phase a participant can trade 3 cards, all of one symbol or all different, for
 /// armies: 4, 7, 10, then +5 every time, with a counter PER PARTICIPANT. The armies join the free pool; the cards
 /// go to the discard pile. With 5 or more cards a trade is mandatory: reinforcements cannot be placed (so the
-/// phase cannot end) until fewer than 5 remain. Cards are not dealt yet (card phase), so tests hand them out.
+/// phase cannot end) until fewer than 5 remain. The tests hand the cards out themselves (the card phase that deals them
+/// has its own tests, <c>CardPhaseTests</c>).
 /// Seat 1 is the participant under test; every test starts with 8 free armies (16 countries).
 /// </summary>
 public sealed class TradeTests
@@ -27,7 +28,7 @@ public sealed class TradeTests
     /// <summary>On the <see cref="TinyBoard"/>: a (galeon), b (globo), c (canon).</summary>
     private static readonly string[] OneOfEachOfTinyBoard = ["a", "b", "c"];
 
-    private static string[] HandOf(GameState state, int seat = 1) => state.Participants[seat].Cards.ToArray();
+    private static string[] HandOf(GameState state, int seat = 1) => CardFixtures.HandIds(state, seat);
 
     // ---- values and the per-participant counter --------------------------------------------------
 
@@ -177,7 +178,7 @@ public sealed class TradeTests
         var traded = ApplyOk(state, Trading(1, galeons[2], galeons[0], galeons[1])).State;
 
         Assert.Equal(globo, HandOf(traded));
-        Assert.Equal([galeons[2], galeons[0], galeons[1]], traded.Discard.ToArray());
+        Assert.Equal([galeons[2], galeons[0], galeons[1]], traded.Deck.Discard.ToArray());
         Assert.Equal(1, traded.Participants[1].TradesDone);
     }
 
@@ -193,9 +194,9 @@ public sealed class TradeTests
         {
             Version = state.Version + 1,
             Turn = Pool(StartingPool + 4),
-            Discard = cards.ToValueArray(),
+            Deck = state.Deck with { Discard = cards.ToValueArray() },
             Participants = state.Participants
-                .Select(p => p.Seat == 1 ? p with { Cards = ValueArray<string>.Empty, TradesDone = 1 } : p)
+                .Select(p => p.Seat == 1 ? p with { Cards = ValueArray<HeldCard>.Empty, TradesDone = 1 } : p)
                 .ToValueArray(),
         };
         Assert.Equal(expected, traded);
@@ -216,7 +217,7 @@ public sealed class TradeTests
         GameEvent[] expected = [new CardsTraded(1, second.ToValueArray(), 7)];
         Assert.Equal(expected, afterSecond.Events.ToArray());
         Assert.Empty(HandOf(afterSecond.State));
-        Assert.Equal([.. first, .. second], afterSecond.State.Discard.ToArray());
+        Assert.Equal([.. first, .. second], afterSecond.State.Deck.Discard.ToArray());
         Assert.Equal(2, afterSecond.State.Participants[1].TradesDone);
     }
 

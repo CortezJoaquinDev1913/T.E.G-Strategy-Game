@@ -25,6 +25,19 @@ public sealed record ReinforcementsPlaced(int Seat, ValueArray<ArmyPlacement> Pl
 public sealed record CardsTraded(int Seat, ValueArray<string> Cards, int Armies) : GameEvent;
 
 /// <summary>
+/// The card phase gave <paramref name="Seat"/> the top card of the draw pile: <paramref name="Card"/> is its country id
+/// (R§7). The card is a hand secret (R§2): a UI may mask <paramref name="Card"/> for everybody but the holder in the public
+/// history; the engine records it in full so that a replay can be checked card by card.
+/// </summary>
+public sealed record CardAwarded(int Seat, string Card) : GameEvent;
+
+/// <summary>
+/// The card phase paid the premium of a card in the hand of <paramref name="Seat"/> (R§7): <paramref name="Armies"/> armies
+/// (2) were added to <paramref name="TerritoryId"/>, which the participant owns. Once per card.
+/// </summary>
+public sealed record BonusArmiesPlaced(int Seat, string TerritoryId, int Armies) : GameEvent;
+
+/// <summary>
 /// An attack was fought (R§6). Both dice lists are SORTED FROM THE HIGHEST DIE TO THE LOWEST, the order they are compared
 /// in; they were rolled attacker first, then defender. Each lost pair cost its loser one army.
 /// </summary>

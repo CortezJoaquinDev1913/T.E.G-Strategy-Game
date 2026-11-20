@@ -88,7 +88,7 @@ public sealed class ArmyConservationTests
     }
 
     private static string[] AllCards(GameState state) =>
-        state.Participants.SelectMany(p => p.Cards).Order().ToArray();
+        state.Participants.SelectMany(p => p.Cards.Select(card => card.TerritoryId)).Order().ToArray();
 
     private static List<(string From, string To)> LegalAttacks(GameState state)
     {

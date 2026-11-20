@@ -48,14 +48,15 @@ internal static class Trade
         var traded = command.Cards.ToHashSet();
         var afterTrade = participant with
         {
-            Cards = participant.Cards.Where(card => !traded.Contains(card)).ToValueArray(),
+            Cards = participant.Cards.Where(card => !traded.Contains(card.TerritoryId)).ToValueArray(),
             TradesDone = participant.TradesDone + 1,
         };
 
+        // Only the country id reaches the discard pile: the premium flag is dropped with the hand.
         var next = state with
         {
             Participants = state.Participants.Select(p => p.Seat == command.Seat ? afterTrade : p).ToValueArray(),
-            Discard = state.Discard.Concat(command.Cards).ToValueArray(),
+            Deck = state.Deck with { Discard = state.Deck.Discard.Concat(command.Cards).ToValueArray() },
             Turn = state.Turn with { FreeArmies = state.Turn.FreeArmies + armies },
         };
 
@@ -78,7 +79,7 @@ internal static class Trade
             return new RuleViolation(RuleViolations.DuplicateCard, "A trade cannot name the same card twice.");
         }
 
-        var missing = cards.FirstOrDefault(card => !participant.Cards.Contains(card));
+        var missing = cards.FirstOrDefault(card => participant.Cards.All(held => held.TerritoryId != card));
         if (missing is not null)
         {
             return new RuleViolation(RuleViolations.CardNotInHand, $"The card '{missing}' is not in your hand.");

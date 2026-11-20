@@ -295,8 +295,9 @@ public sealed class DealTests
         var state = Deal(4, seed: 123);
 
         Assert.Equal(123, state.Rng.Seed);
-        // At least one die per participant plus the 49 swaps of a 50-country shuffle.
-        Assert.True(state.Rng.Draws >= 4 + 49, $"Draws was {state.Rng.Draws}");
+        // At least one die per participant, the 49 swaps of the 50-country shuffle of the deal, and the 49 swaps of the
+        // shuffle of the deck that follows it (R§3: the cards go back to the deck and are mixed again).
+        Assert.True(state.Rng.Draws >= 4 + 49 + 49, $"Draws was {state.Rng.Draws}");
     }
 
     [Fact]

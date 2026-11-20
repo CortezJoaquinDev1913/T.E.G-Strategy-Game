@@ -66,13 +66,18 @@ internal static class Conquest
     private static GameState Eliminate(GameState state, int by, int eliminated, List<GameEvent> events)
     {
         var inherited = state.Participants[eliminated].Cards;
-        events.Add(new ParticipantEliminated(eliminated, by, inherited));
+        events.Add(new ParticipantEliminated(eliminated, by, inherited.Select(card => card.TerritoryId).ToValueArray()));
+
+        // The premium claim belongs to the holder-card pair: the heir receives every card UNCLAIMED, even one the
+        // eliminated participant had already cashed in, so it pays again at the close of the heir's turn if the heir
+        // owns its country (card phase).
+        var received = inherited.Select(card => card with { BonusClaimed = false });
 
         return state with
         {
             Participants = state.Participants
-                .Select(p => p.Seat == eliminated ? p with { Eliminated = true, Cards = ValueArray<string>.Empty }
-                    : p.Seat == by ? p with { Cards = p.Cards.Concat(inherited).ToValueArray() }
+                .Select(p => p.Seat == eliminated ? p with { Eliminated = true, Cards = ValueArray<HeldCard>.Empty }
+                    : p.Seat == by ? p with { Cards = p.Cards.Concat(received).ToValueArray() }
                     : p)
                 .ToValueArray(),
         };

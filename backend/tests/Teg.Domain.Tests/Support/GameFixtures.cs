@@ -134,10 +134,10 @@ internal static class GameFixtures
     public static TradeCards Trading(int seat, params string[] cards) => new(seat, cards.ToValueArray());
 
     /// <summary>
-    /// The active participant places the entire pending pool in ONE command: every continent bonus on the first
-    /// country of that continent (the participant owns all of them), the free armies on their first own country.
+    /// The command that places the entire pending pool of the active participant in ONE go: every continent bonus on
+    /// the first country of that continent (the participant owns all of them), the free armies on their first own country.
     /// </summary>
-    public static GameState PlaceWholePool(GameState state, MapDefinition? map = null)
+    public static PlaceReinforcements WholePoolCommand(GameState state, MapDefinition? map = null)
     {
         var board = map ?? RealMap;
         var placements = state.Turn.ContinentPools
@@ -148,8 +148,12 @@ internal static class GameFixtures
             placements.Add((OwnedBy(state, state.ActiveSeat)[0], state.Turn.FreeArmies));
         }
 
-        return ApplyOk(state, Reinforcing(state.ActiveSeat, placements.ToArray()), board).State;
+        return Reinforcing(state.ActiveSeat, placements.ToArray());
     }
+
+    /// <summary>The active participant places the entire pending pool in ONE command (see <see cref="WholePoolCommand"/>).</summary>
+    public static GameState PlaceWholePool(GameState state, MapDefinition? map = null) =>
+        ApplyOk(state, WholePoolCommand(state, map), map ?? RealMap).State;
 
     public static string[] OwnedBy(GameState state, int seat) =>
         state.Territories.Where(t => t.Owner == seat).Select(t => t.Id).ToArray();

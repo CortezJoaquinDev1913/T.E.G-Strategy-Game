@@ -36,7 +36,10 @@ internal static class TurnMachine
     /// <summary>
     /// Allowed from Ataque (Reagrupe is skipped) and from Reagrupe. From Refuerzo it is refused with
     /// <see cref="RuleViolations.ArmiesPending"/>: that phase ends by itself, once everything is placed (R§5).
-    /// When the next turn opens with Refuerzo, its pool is computed here, from the board as it stands.
+    /// The turn then goes through Tarjeta (<see cref="CardPhase"/>: the card awarded and the premiums, R§7) and ends; the
+    /// events come in this order: the move into Tarjeta, the card phase, the end of the turn, the new round if the rotation
+    /// wrapped, the start of the next turn. When the next turn opens with Refuerzo, its pool is computed here, from the
+    /// board as it stands.
     /// </summary>
     internal static Result<Transition, RuleViolation> EndTurn(GameState state, EndTurn command, MapDefinition map)
     {
@@ -57,12 +60,13 @@ internal static class TurnMachine
         var round = wrapped ? state.Round + 1 : state.Round;
         var opening = round == GameState.HostilitiesRound ? GamePhase.Attack : GamePhase.Reinforcement;
 
-        // Tarjeta has no player decision: the turn passes through it on the way out.
-        var events = new List<GameEvent>
-        {
-            new PhaseChanged(command.Seat, state.Phase, GamePhase.Card),
-            new TurnEnded(command.Seat),
-        };
+        // Tarjeta has no player decision: the turn passes through it on the way out. The card phase resolves here, after
+        // the move into the phase and before the turn is over (card awarded, then the premiums); the rotation below is
+        // computed from the board it leaves, which only the premium armies change.
+        var events = new List<GameEvent> { new PhaseChanged(command.Seat, state.Phase, GamePhase.Card) };
+        var (closed, cardEvents) = CardPhase.Resolve(state, command.Seat);
+        events.AddRange(cardEvents);
+        events.Add(new TurnEnded(command.Seat));
         if (wrapped)
         {
             events.Add(new RoundAdvanced(round));
@@ -73,12 +77,12 @@ internal static class TurnMachine
         var pool = TurnContext.None;
         if (opening == GamePhase.Reinforcement)
         {
-            pool = Reinforce.ComputePool(state, next, map);
+            pool = Reinforce.ComputePool(closed, next, map);
             events.Add(new ReinforcementPoolComputed(next, pool.FreeArmies, pool.ContinentPools));
         }
 
         return Result<Transition, RuleViolation>.Ok(new Transition(
-            state with { ActiveSeat = next, Round = round, Phase = opening, Turn = pool },
+            closed with { ActiveSeat = next, Round = round, Phase = opening, Turn = pool },
             events.ToValueArray()));
     }
 

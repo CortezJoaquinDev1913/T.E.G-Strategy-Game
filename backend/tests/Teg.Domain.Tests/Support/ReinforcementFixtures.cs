@@ -48,13 +48,9 @@ internal static class ReinforcementFixtures
     public static GameState ReinforcementOfSeatOne(IEnumerable<string> ownedBySeatOne) =>
         ApplyOk(SeatOneTurnComesNext(ownedBySeatOne), new EndTurn(0)).State;
 
+    /// <summary>Seat <paramref name="seat"/> holds exactly these cards, none with its premium claimed (see <see cref="CardFixtures.WithHeld"/>).</summary>
     public static GameState WithHand(GameState state, int seat, params string[] cards) =>
-        state with
-        {
-            Participants = state.Participants
-                .Select(p => p.Seat == seat ? p with { Cards = cards.ToValueArray() } : p)
-                .ToValueArray(),
-        };
+        CardFixtures.WithHeld(state, seat, cards.Select(id => new HeldCard(id)).ToArray());
 
     public static GameState WithTrades(GameState state, int seat, int tradesDone) =>
         state with

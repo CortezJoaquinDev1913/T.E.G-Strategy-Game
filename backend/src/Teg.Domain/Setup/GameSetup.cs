@@ -44,6 +44,7 @@ public static class GameSetup
         var rng = new SeededRng(seed);
         var ranking = InitialRanking.Determine(options.Participants.Count, rng.RollDie);
         var territories = DealCountries(map, ranking, rng);
+        var deck = ShuffleDeck(map, rng); // AFTER the deal: its draws come last, so the deal of a seed never changes
 
         return Result<GameState, RuleViolation>.Ok(new GameState(
             Version: 0,
@@ -57,7 +58,23 @@ public static class GameSetup
             Participants: options.Participants
                 .Select((setup, seat) => new Participant(seat, setup.Name, setup.Kind, setup.Color))
                 .ToValueArray(),
-            Territories: territories));
+            Territories: territories)
+        {
+            Deck = deck,
+        });
+    }
+
+    /// <summary>
+    /// The deck (R§3, R§7): one card per country. R§3 deals the shuffled cards and then says they go back to the deck and
+    /// are mixed AGAIN; that second shuffle is this one, with the draws of the same seeded generator that dealt. The cards
+    /// are collected in map order (any starting order gives every permutation the same chance) and nobody holds one.
+    /// </summary>
+    private static Deck ShuffleDeck(MapDefinition map, SeededRng rng)
+    {
+        var cards = map.Territories.Select(t => t.Id).ToArray();
+        rng.Shuffle(cards);
+
+        return new Deck(cards.ToValueArray(), ValueArray<string>.Empty);
     }
 
     /// <summary>

@@ -31,10 +31,10 @@ public enum PlayerColor
 public sealed record Participant(int Seat, string Name, ParticipantKind Kind, PlayerColor Color, bool Eliminated = false)
 {
     /// <summary>
-    /// The country cards in hand (R§7): a card is identified by its country id, its symbol comes from the map.
-    /// Cards are dealt by the card phase; here they are only traded.
+    /// The country cards in hand (R§7), in the order they arrived, each with its premium flag. They come from the card
+    /// phase (one per turn at most) or from an elimination, and leave through trades.
     /// </summary>
-    public ValueArray<string> Cards { get; init; } = ValueArray<string>.Empty;
+    public ValueArray<HeldCard> Cards { get; init; } = ValueArray<HeldCard>.Empty;
 
     /// <summary>How many trades this participant has made in the whole game: it sets the next trade's value (R§7).</summary>
     public int TradesDone { get; init; }

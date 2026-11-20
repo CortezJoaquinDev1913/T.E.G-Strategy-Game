@@ -23,9 +23,7 @@ public static class GameEngine
             EndTurn end => TurnMachine.EndTurn(state, end, map),
             Attack attack => Combat.Apply(state, attack, map),
             MoveAfterConquest occupy => Conquest.Occupy(state, occupy),
-            Regroup regroup => NotYetImplemented(
-                MoveValidator.ValidateRegroup(state, regroup, map),
-                "Executing a regroup is not implemented yet."),
+            Regroup regroup => Regrouping.Apply(state, regroup, map),
             _ => throw new ArgumentException($"Unknown command {command.GetType().Name}.", nameof(command)),
         };
 
@@ -36,13 +34,4 @@ public static class GameEngine
             })
             : outcome;
     }
-
-    /// <summary>
-    /// Stand-in for the commands whose execution belongs to later phases of the change plan (regroup):
-    /// an invalid command keeps its precise violation; a VALID one is answered with
-    /// <see cref="RuleViolations.NotImplementedYet"/>, never with a silent success.
-    /// </summary>
-    private static Result<Transition, RuleViolation> NotYetImplemented(RuleViolation? violation, string message) =>
-        Result<Transition, RuleViolation>.Fail(
-            violation ?? new RuleViolation(RuleViolations.NotImplementedYet, message));
 }

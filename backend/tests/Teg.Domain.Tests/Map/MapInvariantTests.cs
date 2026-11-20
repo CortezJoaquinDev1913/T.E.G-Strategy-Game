@@ -9,16 +9,32 @@ public sealed class MapInvariantTests
 {
     private static readonly MapDefinition Map = MapDefinition.LoadEmbedded();
 
+    /// <summary>The 23 bridges of the table "Puentes sobre el agua" of docs/mapa.md: "a|b" with a before b, ordinal order.</summary>
     private static readonly string[] BridgeIds =
     [
-        "albaran|isla-niebla",
-        "archipielago-aurora|cordillera-gris",
-        "brumaria|isla-niebla",
-        "cabo-helado|isla-niebla",
-        "cierzo|dunas-rojas",
-        "costa-cobriza|costa-salina",
-        "costa-loto|estrecho-lunar",
-        "estrecho-lunar|isla-tortuga",
+        "alaska|kamchatka",
+        "alemania|suecia",
+        "arabia|etiopia",
+        "australia|borneo",
+        "australia|chile",
+        "australia|java",
+        "borneo|java",
+        "borneo|malasia",
+        "borneo|sumatra",
+        "brasil|sahara",
+        "china|japon",
+        "egipto|turquia",
+        "espana|gran-bretana",
+        "espana|sahara",
+        "etiopia|madagascar",
+        "francia|gran-bretana",
+        "gran-bretana|islandia",
+        "groenlandia|islandia",
+        "groenlandia|labrador",
+        "japon|kamchatka",
+        "java|sumatra",
+        "madagascar|sudafrica",
+        "malasia|sumatra",
     ];
 
     // ---- embedded resource -------------------------------------------------------------------
@@ -33,7 +49,7 @@ public sealed class MapInvariantTests
         Assert.Equal(50, MapDefinition.LoadEmbedded().Territories.Count);
     }
 
-    // ---- M-1: 50 unique ids, split 10/6/9/7/14/4 -----------------------------------------------
+    // ---- M-1: 50 unique ids, split 10/6/9/6/15/4 -----------------------------------------------
 
     [Fact]
     public void M1_HasFiftyTerritoriesWithUniqueIds()
@@ -46,8 +62,8 @@ public sealed class MapInvariantTests
     [InlineData("america-del-norte", 10)]
     [InlineData("america-del-sur", 6)]
     [InlineData("europa", 9)]
-    [InlineData("africa", 7)]
-    [InlineData("asia", 14)]
+    [InlineData("africa", 6)]
+    [InlineData("asia", 15)]
     [InlineData("oceania", 4)]
     public void M1_ContinentHasExpectedNumberOfTerritories(string continentId, int expected)
     {
@@ -172,10 +188,13 @@ public sealed class MapInvariantTests
     [Fact]
     public void M4_BridgesCountAsAdjacency()
     {
-        // isla-niebla is joined to the rest of the map ONLY through bridges.
+        // groenlandia is joined to the rest of the map ONLY through bridges.
         Assert.Equal(
-            ["albaran", "brumaria", "cabo-helado"],
-            Map.Neighbors("isla-niebla").OrderBy(id => id, StringComparer.Ordinal));
+            ["islandia", "labrador"],
+            Map.Neighbors("groenlandia").OrderBy(id => id, StringComparer.Ordinal));
+        Assert.All(
+            Map.Borders.Where(b => b.A == "groenlandia" || b.B == "groenlandia"),
+            b => Assert.Equal(BorderKind.Bridge, b.Kind));
     }
 
     // ---- M-5: card symbols 17 / 17 / 16 -----------------------------------------------------------
@@ -205,10 +224,10 @@ public sealed class MapInvariantTests
         Assert.True(size >= requiredByAnObjective);
     }
 
-    // ---- M-7: exactly the 8 bridges of the table ---------------------------------------------------
+    // ---- M-7: exactly the 23 bridges of the table --------------------------------------------------
 
     [Fact]
-    public void M7_ThereAreExactlyEightBridgesAndTheyAreTheDocumentedOnes()
+    public void M7_ThereAreExactlyTwentyThreeBridgesAndTheyAreTheDocumentedOnes()
     {
         var bridges = Map.Borders
             .Where(b => b.Kind == BorderKind.Bridge)
@@ -216,18 +235,18 @@ public sealed class MapInvariantTests
             .Order(StringComparer.Ordinal)
             .ToList();
 
-        Assert.Equal(8, bridges.Count);
+        Assert.Equal(23, bridges.Count);
         Assert.Equal(BridgeIds, bridges);
     }
 
     [Fact]
     public void M7_BridgeEndpointsAreAdjacentBothWays()
     {
-        Assert.Contains("isla-niebla", Map.Neighbors("cabo-helado"));
-        Assert.Contains("cabo-helado", Map.Neighbors("isla-niebla"));
-        Assert.True(Map.AreAdjacent("estrecho-lunar", "isla-tortuga"));
-        Assert.True(Map.AreAdjacent("isla-tortuga", "estrecho-lunar"));
-        Assert.False(Map.AreAdjacent("borealia", "isla-tortuga"));
+        Assert.Contains("kamchatka", Map.Neighbors("alaska"));
+        Assert.Contains("alaska", Map.Neighbors("kamchatka"));
+        Assert.True(Map.AreAdjacent("espana", "sahara"));
+        Assert.True(Map.AreAdjacent("sahara", "espana"));
+        Assert.False(Map.AreAdjacent("francia", "sahara")); // two hops away: land to espana, then the bridge
     }
 
     // ---- helpers --------------------------------------------------------------------------------

@@ -11,6 +11,9 @@ public sealed record ContinentPool(string ContinentId, int Armies);
 /// </summary>
 public sealed record PendingConquest(string From, string To);
 
+/// <summary>How many more armies the country <paramref name="TerritoryId"/> may send out in Reagrupe (R§6).</summary>
+public sealed record RegroupQuota(string TerritoryId, int Movable);
+
 /// <summary>
 /// What belongs to the CURRENT TURN of the active participant. A fresh one is created every time a turn starts, so
 /// everything in it begins from zero for each turn of each participant.
@@ -18,6 +21,7 @@ public sealed record PendingConquest(string From, string To);
 /// <item>Refuerzo (R§5): the armies still to be placed. It is computed ONCE, when the turn starts, and only shrinks
 /// (placements) or grows (trades) from then on.</item>
 /// <item>Ataque (R§6): the conquests of the turn and the occupation waiting for the attacker's decision.</item>
+/// <item>Reagrupe (R§6): the quota of every own country, fixed when the phase starts (<see cref="RegroupQuotas"/>).</item>
 /// </list>
 /// </summary>
 /// <param name="FreeArmies">Armies of the countries and of trades: any own country.</param>
@@ -37,6 +41,20 @@ public sealed record TurnContext(int FreeArmies, ValueArray<ContinentPool> Conti
     /// The conquest waiting for <c>MoveAfterConquest</c>, or <c>null</c>. While it is set, no other command is accepted.
     /// </summary>
     public PendingConquest? PendingConquest { get; init; }
+
+    /// <summary>
+    /// The quotas of Reagrupe (R§6): one entry per country of the active participant, fixed ONCE when the phase starts as
+    /// <c>armies then - 1</c> (map order, a country with one army has a quota of zero) and spent by the regroups that
+    /// leave it. Empty outside Reagrupe.
+    /// </summary>
+    public ValueArray<RegroupQuota> RegroupQuotas { get; init; } = ValueArray<RegroupQuota>.Empty;
+
+    /// <summary>
+    /// How many more armies <paramref name="territoryId"/> may send out in this Reagrupe; zero when it has spent its
+    /// quota, when it is not the active participant's, or when the phase has not started.
+    /// </summary>
+    public int RegroupQuotaOf(string territoryId) =>
+        RegroupQuotas.FirstOrDefault(quota => quota.TerritoryId == territoryId)?.Movable ?? 0;
 
     /// <summary>Every army still to be placed: free ones plus the continent bonuses.</summary>
     public int PendingArmies => FreeArmies + ContinentPools.Sum(pool => pool.Armies);

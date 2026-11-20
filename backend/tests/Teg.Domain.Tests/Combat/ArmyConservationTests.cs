@@ -216,7 +216,7 @@ public sealed class ArmyConservationTests
     {
         var total = new List<Summary>();
 
-        for (var seed = 1L; seed <= 40; seed++)
+        for (var seed = 1L; seed <= 80; seed++)
         {
             total.Add(Play(Dealt(participants, seed), choiceSeed: seed * 7919));
         }

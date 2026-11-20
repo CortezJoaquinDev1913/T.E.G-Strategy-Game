@@ -52,6 +52,9 @@ public sealed record ParticipantEliminated(int Eliminated, int By, ValueArray<st
 /// <summary>After a conquest the attacker left <paramref name="Armies"/> armies in total on <paramref name="To"/>, taken from <paramref name="From"/> (R§6).</summary>
 public sealed record ArmiesMovedAfterConquest(int Seat, string From, string To, int Armies) : GameEvent;
 
+/// <summary><paramref name="Armies"/> armies moved from the own country <paramref name="From"/> to the own country <paramref name="To"/> in Reagrupe (R§6).</summary>
+public sealed record ArmiesRegrouped(int Seat, string From, string To, int Armies) : GameEvent;
+
 /// <summary>The active participant moved on to <paramref name="To"/> inside their own turn.</summary>
 public sealed record PhaseChanged(int Seat, GamePhase From, GamePhase To) : GameEvent;
 

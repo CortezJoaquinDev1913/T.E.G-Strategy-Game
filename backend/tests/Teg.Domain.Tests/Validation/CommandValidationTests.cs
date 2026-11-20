@@ -12,9 +12,8 @@ namespace Teg.Domain.Tests.Validation;
 /// <summary>
 /// E4 / R§6: every command is validated before it changes anything. A refusal is a typed
 /// <see cref="RuleViolation"/> with a stable code, and the input state stays exactly (structurally) as it was.
-/// Attack and Regroup are validated here. Resolving a valid attack is the combat phase (CombatTests); executing a
-/// regroup comes with phase 6, so a VALID regroup still answers <see cref="RuleViolations.NotImplementedYet"/> and never
-/// silently succeeds.
+/// Attack and Regroup are validated here. Resolving a valid attack is the combat phase (CombatTests); executing a valid
+/// regroup, with its quotas, is the regroup phase (RegroupTests).
 /// </summary>
 public sealed class CommandValidationTests
 {
@@ -199,8 +198,9 @@ public sealed class CommandValidationTests
     public void EveryBorderOfTheRealMap_LandOrBridge_AllowsAnAttackInBothDirections()
     {
         var borders = RealMap.Borders;
-        Assert.Equal(8, borders.Count(b => b.Kind == BorderKind.Bridge)); // bridges are really covered
-        Assert.True(borders.Count(b => b.Kind == BorderKind.Land) > 8);
+        var bridges = borders.Count(b => b.Kind == BorderKind.Bridge);
+        Assert.Equal(23, bridges); // bridges are really covered
+        Assert.True(borders.Count(b => b.Kind == BorderKind.Land) > bridges);
 
         foreach (var border in borders)
         {
@@ -358,7 +358,7 @@ public sealed class CommandValidationTests
         }
     }
 
-    // ---- a valid attack is resolved (see CombatTests); a valid regroup is not executed yet (documented stand-in) ----
+    // ---- a valid attack is resolved (see CombatTests); a valid regroup is executed (see RegroupTests) ----
 
     [Fact]
     public void AValidAttack_IsAccepted_AndResolvedByTheEngine()
@@ -371,9 +371,17 @@ public sealed class CommandValidationTests
     }
 
     [Fact]
-    public void AValidRegroup_IsNotExecutedYet_ItAnswersNotImplementedYet_AndNeverSucceedsSilently()
+    public void AValidRegroup_IsAccepted_AndExecutedByTheEngine()
     {
-        Reject(RuleViolations.NotImplementedYet, GamePhase.Regroup, new Regroup(0, "a", "b", 1));
+        // Reached through StartRegroup, as in a real game: that is the command that fixes the quotas of the phase.
+        var regroup = ApplyOk(TinyBoard.State(GamePhase.Attack), new StartRegroup(0), TinyBoard.Map).State;
+
+        var transition = ApplyOk(regroup, new Regroup(0, "a", "b", 1), TinyBoard.Map);
+
+        Assert.Equal(regroup.Version + 1, transition.State.Version);
+        var moved = Assert.Single(transition.Events.OfType<ArmiesRegrouped>());
+        Assert.Equal(("a", "b", 1), (moved.From, moved.To, moved.Armies));
+        Assert.Equal((4, 4), (ArmiesIn(transition.State, "a"), ArmiesIn(transition.State, "b")));
     }
 
     // ---- stable codes (API contract) -----------------------------------------------------------------------
@@ -392,10 +400,10 @@ public sealed class CommandValidationTests
     [InlineData(RuleViolations.InvalidArmyCount, "INVALID_ARMY_COUNT")]
     [InlineData(RuleViolations.NotEnoughArmies, "NOT_ENOUGH_ARMIES")]
     [InlineData(RuleViolations.WrongPlacementTotal, "WRONG_PLACEMENT_TOTAL")]
-    [InlineData(RuleViolations.NotImplementedYet, "NOT_IMPLEMENTED_YET")]
     [InlineData(RuleViolations.ConquestPending, "CONQUEST_PENDING")]
     [InlineData(RuleViolations.NoConquestPending, "NO_CONQUEST_PENDING")]
     [InlineData(RuleViolations.OccupationLimitExceeded, "OCCUPATION_LIMIT_EXCEEDED")]
+    [InlineData(RuleViolations.RegroupQuotaExceeded, "REGROUP_QUOTA_EXCEEDED")]
     public void TheViolationCodes_AreTheStableStringsOfTheApiContract(string code, string expectedLiteral)
     {
         Assert.Equal(expectedLiteral, code);

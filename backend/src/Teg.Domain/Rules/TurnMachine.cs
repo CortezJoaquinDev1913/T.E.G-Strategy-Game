@@ -22,8 +22,14 @@ internal static class TurnMachine
             return Result<Transition, RuleViolation>.Fail(violation);
         }
 
+        // The quotas are fixed NOW, from the armies on the board at the start of the phase; `with` keeps the rest of the
+        // turn context (the conquest counter is still needed by the card phase).
         return Result<Transition, RuleViolation>.Ok(new Transition(
-            state with { Phase = GamePhase.Regroup },
+            state with
+            {
+                Phase = GamePhase.Regroup,
+                Turn = state.Turn with { RegroupQuotas = Regrouping.ComputeQuotas(state) },
+            },
             new GameEvent[] { new PhaseChanged(command.Seat, GamePhase.Attack, GamePhase.Regroup) }.ToValueArray()));
     }
 

@@ -1,11 +1,13 @@
-# Mapa (original)
+# Mapa
 
-Mapa **original** de 50 países y 6 continentes para el motor, el tablero SVG y el bot.
-Las formas, nombres y fronteras no reproducen el tablero comercial.
+Mapa de 50 países y 6 continentes para el motor, el tablero SVG y el bot.
+Los **nombres** de los países son los de la geografía real. Las **fronteras, el dibujo y el arte** son propios:
+el grafo de adyacencias se armó a partir de la geografía y de los ejemplos del reglamento (por ejemplo
+Francia–España, Chile–Australia y Turquía–Egipto por puente), y no pretende ser idéntico a ningún tablero comercial.
 
 > **Archivo generado.** La fuente de verdad legible por máquina es [`mapa.json`](mapa.json).
-> Este documento es una vista de ese JSON. Los ids son **estables** (kebab-case ASCII) y son las claves que usan
-> la API y la base de datos.
+> Este documento es una vista de ese JSON. Los ids son **estables** (kebab-case ASCII, sin tildes) y son las claves
+> que usan la API y la base de datos.
 
 ## Convenciones
 - Dos países son **limítrofes** si comparten una frontera terrestre (`land`) **o** están unidos por un puente sobre el agua (`bridge`). Para atacar y reagrupar ambos tipos valen igual.
@@ -19,8 +21,8 @@ Las formas, nombres y fronteras no reproducen el tablero comercial.
 | América del Norte | 10 | 5 |
 | América del Sur | 6 | 3 |
 | Europa | 9 | 5 |
-| África | 7 | 3 |
-| Asia | 14 | 7 |
+| África | 6 | 3 |
+| Asia | 15 | 7 |
 | Oceanía | 4 | 2 |
 | **Total** | **50** | |
 
@@ -30,113 +32,129 @@ Las formas, nombres y fronteras no reproducen el tablero comercial.
 
 | Id | País | Tarjeta | Limítrofes |
 |---|---|---|---|
-| `borealia` | Borealia | Galeón | `cabo-helado`, `costa-ambar`, `lagos-norte` |
-| `cabo-helado` | Cabo Helado | Globo | `borealia`, `isla-niebla` (puente), `lagos-norte`, `valle-brumoso` |
-| `lagos-norte` | Lagos del Norte | Cañón | `borealia`, `cabo-helado`, `costa-ambar`, `llanura-alta`, `valle-brumoso` |
-| `costa-ambar` | Costa Ámbar | Galeón | `borealia`, `lagos-norte`, `llanura-alta`, `sierra-roja` |
-| `sierra-roja` | Sierra Roja | Globo | `costa-ambar`, `llanura-alta`, `peninsula-sol` |
-| `llanura-alta` | Llanura Alta | Cañón | `costa-ambar`, `golfo-dorado`, `lagos-norte`, `sierra-roja`, `valle-brumoso` |
-| `valle-brumoso` | Valle Brumoso | Galeón | `cabo-helado`, `golfo-dorado`, `lagos-norte`, `llanura-alta` |
-| `golfo-dorado` | Golfo Dorado | Globo | `istmo-verde`, `llanura-alta`, `peninsula-sol`, `valle-brumoso` |
-| `peninsula-sol` | Península del Sol | Cañón | `golfo-dorado`, `istmo-verde`, `sierra-roja` |
-| `istmo-verde` | Istmo Verde | Galeón | `cuenca-esmeralda`, `golfo-dorado`, `peninsula-sol` |
+| `alaska` | Alaska | Galeón | `kamchatka` (puente), `yukon` |
+| `california` | California | Globo | `mexico`, `nueva-york`, `oregon` |
+| `canada` | Canadá | Cañón | `labrador`, `nueva-york`, `oregon`, `terranova`, `yukon` |
+| `groenlandia` | Groenlandia | Galeón | `islandia` (puente), `labrador` (puente) |
+| `labrador` | Labrador | Globo | `canada`, `groenlandia` (puente), `terranova` |
+| `mexico` | México | Cañón | `california`, `colombia`, `nueva-york` |
+| `nueva-york` | Nueva York | Galeón | `california`, `canada`, `mexico`, `oregon`, `terranova` |
+| `oregon` | Oregón | Globo | `california`, `canada`, `nueva-york`, `yukon` |
+| `terranova` | Terranova | Cañón | `canada`, `labrador`, `nueva-york` |
+| `yukon` | Yukon | Galeón | `alaska`, `canada`, `oregon` |
 
 ### América del Sur (6)
 
 | Id | País | Tarjeta | Limítrofes |
 |---|---|---|---|
-| `cuenca-esmeralda` | Cuenca Esmeralda | Globo | `cordillera-gris`, `costa-cobriza`, `istmo-verde`, `selva-madre` |
-| `cordillera-gris` | Cordillera Gris | Cañón | `archipielago-aurora` (puente), `cuenca-esmeralda`, `pampa-larga`, `selva-madre`, `tierra-austral` |
-| `selva-madre` | Selva Madre | Galeón | `cordillera-gris`, `costa-cobriza`, `cuenca-esmeralda`, `pampa-larga` |
-| `costa-cobriza` | Costa Cobriza | Globo | `costa-salina` (puente), `cuenca-esmeralda`, `pampa-larga`, `selva-madre` |
-| `pampa-larga` | Pampa Larga | Cañón | `cordillera-gris`, `costa-cobriza`, `selva-madre`, `tierra-austral` |
-| `tierra-austral` | Tierra Austral | Galeón | `cordillera-gris`, `pampa-larga` |
+| `argentina` | Argentina | Globo | `brasil`, `chile`, `uruguay` |
+| `brasil` | Brasil | Cañón | `argentina`, `colombia`, `peru`, `sahara` (puente), `uruguay` |
+| `chile` | Chile | Galeón | `argentina`, `australia` (puente), `peru` |
+| `colombia` | Colombia | Globo | `brasil`, `mexico`, `peru` |
+| `peru` | Perú | Cañón | `brasil`, `chile`, `colombia` |
+| `uruguay` | Uruguay | Galeón | `argentina`, `brasil` |
 
 ### Europa (9)
 
 | Id | País | Tarjeta | Limítrofes |
 |---|---|---|---|
-| `brumaria` | Brumaria | Globo | `albaran`, `estepa-norte`, `isla-niebla` (puente), `valdoria` |
-| `isla-niebla` | Isla Niebla | Cañón | `albaran` (puente), `brumaria` (puente), `cabo-helado` (puente) |
-| `albaran` | Albarán | Galeón | `brumaria`, `cierzo`, `isla-niebla` (puente), `valdoria` |
-| `cierzo` | Cierzo | Globo | `albaran`, `dunas-rojas` (puente), `montealto`, `valdoria` |
-| `valdoria` | Valdoria | Cañón | `albaran`, `brumaria`, `cierzo`, `estepa-norte`, `marca-del-alba`, `montealto` |
-| `montealto` | Montealto | Galeón | `cierzo`, `marca-del-alba`, `puerto-sirio`, `valdoria` |
-| `estepa-norte` | Estepa Norte | Globo | `brumaria`, `marca-del-alba`, `taiga-eterna`, `valdoria` |
-| `marca-del-alba` | Marca del Alba | Cañón | `estepa-alta`, `estepa-norte`, `montealto`, `puerto-sirio`, `valdoria` |
-| `puerto-sirio` | Puerto Sirio | Galeón | `desierto-ocre`, `marca-del-alba`, `montealto`, `oasis-largo` |
+| `alemania` | Alemania | Globo | `francia`, `italia`, `polonia`, `suecia` (puente) |
+| `espana` | España | Cañón | `francia`, `gran-bretana` (puente), `sahara` (puente) |
+| `francia` | Francia | Galeón | `alemania`, `espana`, `gran-bretana` (puente), `italia` |
+| `gran-bretana` | Gran Bretaña | Globo | `espana` (puente), `francia` (puente), `islandia` (puente) |
+| `islandia` | Islandia | Cañón | `gran-bretana` (puente), `groenlandia` (puente) |
+| `italia` | Italia | Galeón | `alemania`, `francia` |
+| `polonia` | Polonia | Globo | `alemania`, `rusia` |
+| `rusia` | Rusia | Cañón | `aral`, `iran`, `polonia`, `suecia`, `turquia` |
+| `suecia` | Suecia | Galeón | `alemania` (puente), `rusia` |
 
-### África (7)
-
-| Id | País | Tarjeta | Limítrofes |
-|---|---|---|---|
-| `dunas-rojas` | Dunas Rojas | Globo | `cierzo` (puente), `costa-salina`, `oasis-largo`, `savana-alta` |
-| `oasis-largo` | Oasis Largo | Cañón | `desierto-ocre`, `dunas-rojas`, `lagos-altos`, `puerto-sirio`, `savana-alta` |
-| `costa-salina` | Costa Salina | Galeón | `costa-cobriza` (puente), `dunas-rojas`, `savana-alta`, `selva-umbria` |
-| `savana-alta` | Savana Alta | Globo | `costa-salina`, `dunas-rojas`, `lagos-altos`, `oasis-largo`, `selva-umbria` |
-| `selva-umbria` | Selva Umbría | Cañón | `cabo-tormenta`, `costa-salina`, `lagos-altos`, `savana-alta` |
-| `lagos-altos` | Lagos Altos | Galeón | `cabo-tormenta`, `oasis-largo`, `savana-alta`, `selva-umbria` |
-| `cabo-tormenta` | Cabo Tormenta | Globo | `lagos-altos`, `selva-umbria` |
-
-### Asia (14)
+### África (6)
 
 | Id | País | Tarjeta | Limítrofes |
 |---|---|---|---|
-| `taiga-eterna` | Taiga Eterna | Cañón | `cumbres-azur`, `estepa-alta`, `estepa-norte`, `montes-jade` |
-| `estepa-alta` | Estepa Alta | Galeón | `desierto-ocre`, `marca-del-alba`, `meseta-zafiro`, `montes-jade`, `taiga-eterna` |
-| `montes-jade` | Montes de Jade | Globo | `cumbres-azur`, `estepa-alta`, `meseta-zafiro`, `sierra-ambar`, `taiga-eterna`, `valle-bambu` |
-| `cumbres-azur` | Cumbres Azur | Cañón | `costa-loto`, `montes-jade`, `sierra-ambar`, `taiga-eterna` |
-| `desierto-ocre` | Desierto Ocre | Galeón | `estepa-alta`, `llanos-marfil`, `meseta-zafiro`, `oasis-largo`, `puerto-sirio` |
-| `meseta-zafiro` | Meseta Zafiro | Globo | `desierto-ocre`, `estepa-alta`, `llanos-marfil`, `montes-jade`, `valle-bambu` |
-| `sierra-ambar` | Sierra Ámbar | Cañón | `costa-loto`, `cumbres-azur`, `montes-jade`, `valle-bambu` |
-| `costa-loto` | Costa Loto | Galeón | `cumbres-azur`, `delta-perla`, `estrecho-lunar` (puente), `sierra-ambar` |
-| `valle-bambu` | Valle Bambú | Globo | `cuenca-azafran`, `delta-perla`, `llanos-marfil`, `meseta-zafiro`, `montes-jade`, `sierra-ambar` |
-| `llanos-marfil` | Llanos Marfil | Cañón | `cuenca-azafran`, `desierto-ocre`, `meseta-zafiro`, `puerto-coral`, `valle-bambu` |
-| `cuenca-azafran` | Cuenca Azafrán | Galeón | `delta-perla`, `llanos-marfil`, `puerto-coral`, `valle-bambu` |
-| `delta-perla` | Delta Perla | Globo | `costa-loto`, `cuenca-azafran`, `puerto-coral`, `valle-bambu` |
-| `puerto-coral` | Puerto Coral | Cañón | `cuenca-azafran`, `delta-perla`, `llanos-marfil` |
-| `estrecho-lunar` | Estrecho Lunar | Galeón | `costa-loto` (puente), `isla-tortuga` (puente) |
+| `egipto` | Egipto | Globo | `etiopia`, `israel`, `sahara`, `turquia` (puente) |
+| `etiopia` | Etiopía | Cañón | `arabia` (puente), `egipto`, `madagascar` (puente), `sahara`, `zaire` |
+| `madagascar` | Madagascar | Galeón | `etiopia` (puente), `sudafrica` (puente) |
+| `sahara` | Sahara | Globo | `brasil` (puente), `egipto`, `espana` (puente), `etiopia`, `zaire` |
+| `sudafrica` | Sudáfrica | Cañón | `madagascar` (puente), `zaire` |
+| `zaire` | Zaire | Galeón | `etiopia`, `sahara`, `sudafrica` |
+
+### Asia (15)
+
+| Id | País | Tarjeta | Limítrofes |
+|---|---|---|---|
+| `arabia` | Arabia | Globo | `etiopia` (puente), `iran`, `israel` |
+| `aral` | Aral | Cañón | `china`, `gobi`, `iran`, `mongolia`, `rusia`, `tartaria` |
+| `china` | China | Galeón | `aral`, `gobi`, `india`, `japon` (puente), `malasia`, `mongolia` |
+| `gobi` | Gobi | Globo | `aral`, `china`, `mongolia` |
+| `india` | India | Cañón | `china`, `iran`, `malasia` |
+| `iran` | Irán | Galeón | `arabia`, `aral`, `india`, `rusia`, `turquia` |
+| `israel` | Israel | Globo | `arabia`, `egipto`, `turquia` |
+| `japon` | Japón | Cañón | `china` (puente), `kamchatka` (puente) |
+| `kamchatka` | Kamchatka | Galeón | `alaska` (puente), `japon` (puente), `mongolia`, `siberia` |
+| `malasia` | Malasia | Globo | `borneo` (puente), `china`, `india`, `sumatra` (puente) |
+| `mongolia` | Mongolia | Cañón | `aral`, `china`, `gobi`, `kamchatka`, `siberia`, `tartaria` |
+| `siberia` | Siberia | Galeón | `kamchatka`, `mongolia`, `taimir`, `tartaria` |
+| `taimir` | Taimir | Globo | `siberia`, `tartaria` |
+| `tartaria` | Tartaria | Cañón | `aral`, `mongolia`, `siberia`, `taimir` |
+| `turquia` | Turquía | Galeón | `egipto` (puente), `iran`, `israel`, `rusia` |
 
 ### Oceanía (4)
 
 | Id | País | Tarjeta | Limítrofes |
 |---|---|---|---|
-| `isla-tortuga` | Isla Tortuga | Globo | `costa-arrecife`, `estrecho-lunar` (puente), `tierra-roja` |
-| `costa-arrecife` | Costa Arrecife | Cañón | `archipielago-aurora`, `isla-tortuga`, `tierra-roja` |
-| `tierra-roja` | Tierra Roja | Galeón | `archipielago-aurora`, `costa-arrecife`, `isla-tortuga` |
-| `archipielago-aurora` | Archipiélago Aurora | Globo | `cordillera-gris` (puente), `costa-arrecife`, `tierra-roja` |
+| `australia` | Australia | Globo | `borneo` (puente), `chile` (puente), `java` (puente) |
+| `borneo` | Borneo | Cañón | `australia` (puente), `java` (puente), `malasia` (puente), `sumatra` (puente) |
+| `java` | Java | Galeón | `australia` (puente), `borneo` (puente), `sumatra` (puente) |
+| `sumatra` | Sumatra | Globo | `borneo` (puente), `java` (puente), `malasia` (puente) |
 
 ## Puentes sobre el agua
 
 | Desde | Hasta |
 |---|---|
-| Albarán | Isla Niebla |
-| Archipiélago Aurora | Cordillera Gris |
-| Brumaria | Isla Niebla |
-| Cabo Helado | Isla Niebla |
-| Cierzo | Dunas Rojas |
-| Costa Cobriza | Costa Salina |
-| Costa Loto | Estrecho Lunar |
-| Estrecho Lunar | Isla Tortuga |
+| Alaska | Kamchatka |
+| Alemania | Suecia |
+| Arabia | Etiopía |
+| Australia | Borneo |
+| Australia | Chile |
+| Australia | Java |
+| Borneo | Java |
+| Borneo | Malasia |
+| Borneo | Sumatra |
+| Brasil | Sahara |
+| China | Japón |
+| Egipto | Turquía |
+| España | Gran Bretaña |
+| España | Sahara |
+| Etiopía | Madagascar |
+| Francia | Gran Bretaña |
+| Gran Bretaña | Islandia |
+| Groenlandia | Islandia |
+| Groenlandia | Labrador |
+| Japón | Kamchatka |
+| Java | Sumatra |
+| Madagascar | Sudáfrica |
+| Malasia | Sumatra |
 
 ## Conexiones entre continentes
 
 | Continentes | Fronteras |
 |---|---|
-| América del Sur ↔ Oceanía | Archipiélago Aurora–Cordillera Gris (puente) |
-| América del Norte ↔ Europa | Cabo Helado–Isla Niebla (puente) |
-| África ↔ Europa | Cierzo–Dunas Rojas (puente); Oasis Largo–Puerto Sirio |
-| África ↔ América del Sur | Costa Cobriza–Costa Salina (puente) |
-| América del Norte ↔ América del Sur | Cuenca Esmeralda–Istmo Verde |
-| África ↔ Asia | Desierto Ocre–Oasis Largo |
-| Asia ↔ Europa | Desierto Ocre–Puerto Sirio; Estepa Alta–Marca del Alba; Estepa Norte–Taiga Eterna |
-| Asia ↔ Oceanía | Estrecho Lunar–Isla Tortuga (puente) |
+| América del Norte ↔ Asia | Alaska–Kamchatka (puente) |
+| África ↔ Asia | Arabia–Etiopía (puente); Egipto–Israel; Egipto–Turquía (puente) |
+| Asia ↔ Europa | Aral–Rusia; Irán–Rusia; Rusia–Turquía |
+| América del Sur ↔ Oceanía | Australia–Chile (puente) |
+| Asia ↔ Oceanía | Borneo–Malasia (puente); Malasia–Sumatra (puente) |
+| África ↔ América del Sur | Brasil–Sahara (puente) |
+| América del Norte ↔ América del Sur | Colombia–México |
+| África ↔ Europa | España–Sahara (puente) |
+| América del Norte ↔ Europa | Groenlandia–Islandia (puente) |
 
 ## Invariantes (cada uno debe tener un test xUnit)
-1. Hay exactamente 50 países con ids únicos, repartidos así: América del Norte 10, América del Sur 6, Europa 9, África 7, Asia 14, Oceanía 4.
+1. Hay exactamente 50 países con ids únicos, repartidos así: América del Norte 10, América del Sur 6, Europa 9, África 6, Asia 15, Oceanía 4.
 2. El grafo es simétrico, sin auto-fronteras ni duplicadas, y **conexo** (se llega de cualquier país a cualquier otro).
 3. Cada continente es **conexo internamente**, lo que habilita refuerzos por continente y objetivos de «3 limítrofes entre sí».
 4. Todo país tiene al menos 2 limítrofes (ninguno queda aislado ni con una sola salida).
 5. Símbolos de tarjeta: 17 galeones, 17 globos, 16 cañones.
 6. Los continentes alcanzan los cupos de los 15 objetivos secretos (por ejemplo, Europa ≥ 7 y Asia ≥ 4).
-7. Los puentes son los 8 de la tabla anterior.
+7. Los puentes son los 23 de la tabla anterior.

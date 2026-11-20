@@ -79,8 +79,8 @@ public static class RuleViolations
     public const string OccupationLimitExceeded = "OCCUPATION_LIMIT_EXCEEDED";
 
     /// <summary>
-    /// The command is valid, but the engine cannot execute it yet. Regroup execution arrives with the regroup phase
-    /// of the change plan, which replaces this answer. It is never a silent success.
+    /// A regroup asks for more armies than the origin may still move: its quota (armies when Reagrupe started - 1, minus
+    /// what it already sent out) does not cover them. Armies that arrived in this phase cannot be moved on (R§6).
     /// </summary>
-    public const string NotImplementedYet = "NOT_IMPLEMENTED_YET";
+    public const string RegroupQuotaExceeded = "REGROUP_QUOTA_EXCEEDED";
 }

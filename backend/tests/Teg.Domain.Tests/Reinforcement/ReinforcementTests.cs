@@ -58,11 +58,11 @@ public sealed class ReinforcementTests
     // ---- R§5.2: the continents ------------------------------------------------------------------
 
     [Theory]
-    [InlineData(Asia, 14, 7, 7)]
+    [InlineData(Asia, 15, 7, 7)]
     [InlineData("europa", 9, 4, 5)]
     [InlineData("america-del-norte", 10, 5, 5)]
     [InlineData("america-del-sur", 6, 3, 3)]
-    [InlineData("africa", 7, 3, 3)]
+    [InlineData("africa", 6, 3, 3)]
     [InlineData(Oceania, 4, 3, 2)]
     public void R5_AContinentOwnedInFull_AddsItsBonus_ToTheArmiesOfTheCountries(
         string continent,
@@ -79,7 +79,7 @@ public sealed class ReinforcementTests
     }
 
     [Theory]
-    [InlineData(Asia, 6)]
+    [InlineData(Asia, 7)] // 14 of its 15 countries
     [InlineData(Oceania, 3)]
     public void R5_AContinentMissingOneCountry_GivesNoBonus(string continent, int countryArmies)
     {
@@ -93,10 +93,10 @@ public sealed class ReinforcementTests
     [Fact]
     public void R5_SeveralContinents_AddUp_ListedInMapOrder()
     {
-        var asiaAndOceania = ContinentCountries(Asia).Concat(ContinentCountries(Oceania)); // 18 countries
+        var asiaAndOceania = ContinentCountries(Asia).Concat(ContinentCountries(Oceania)); // 19 countries
         var americasAndAfrica = ContinentCountries("america-del-norte")
             .Concat(ContinentCountries("america-del-sur"))
-            .Concat(ContinentCountries("africa")); // 23 countries
+            .Concat(ContinentCountries("africa")); // 22 countries
 
         var first = ReinforcementOfSeatOne(asiaAndOceania).Turn;
         var second = ReinforcementOfSeatOne(americasAndAfrica).Turn;
@@ -289,7 +289,7 @@ public sealed class ReinforcementTests
 
     // ---- R§5.2: the continent armies only go to their continent -----------------------------------------
 
-    /// <summary>Seat 1 owns Asia (14) and the first country of 4 other continents: 18 countries = 9 free + 7 for Asia.</summary>
+    /// <summary>Seat 1 owns Asia (15) and the first country of 4 other continents: 19 countries = 9 free + 7 for Asia.</summary>
     private static GameState AsiaAndFourOthers()
     {
         var others = new[] { "america-del-norte", "america-del-sur", "europa", "africa" }.Select(c => ContinentCountries(c)[0]);

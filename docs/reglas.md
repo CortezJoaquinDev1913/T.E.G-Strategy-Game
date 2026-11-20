@@ -1,8 +1,8 @@
 # Reglas del juego (fuente de verdad del motor C#)
 
 Base: reglamento de **TEG clásico** (Yetem), adaptado a **2–4 participantes en un mismo navegador**.
-Mapa, nombres de países y arte son **originales** (no se copia el tablero comercial). El grafo de
-adyacencias y los continentes se definen en `docs/mapa.md` (pendiente). Todo lo marcado como
+El mapa usa **nombres reales de países**; las fronteras, el dibujo y el arte son **propios** (no se copia el
+tablero comercial). El grafo de adyacencias y los continentes se definen en `docs/mapa.md` / `docs/mapa.json`. Todo lo marcado como
 **[ADAPTACIÓN]** se desvía del reglamento o lo completa donde era ambiguo.
 
 > Contrato para el motor: cada regla de este documento debe tener al menos un test xUnit.

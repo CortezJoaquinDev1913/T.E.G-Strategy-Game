@@ -4,6 +4,7 @@ using Teg.Domain.Commands;
 using Teg.Domain.Events;
 using Teg.Domain.Rng;
 using Teg.Domain.State;
+using Teg.Domain.Tests.Support;
 using static Teg.Domain.Tests.Support.CardFixtures;
 using static Teg.Domain.Tests.Support.CombatFixtures;
 using static Teg.Domain.Tests.Support.GameFixtures;
@@ -270,7 +271,8 @@ public sealed class CardConservationTests
     }
 
     /// <summary>
-    /// Plays the game from <paramref name="start"/> until one participant is left or the command cap, checking every step.
+    /// Plays the game from <paramref name="start"/> until somebody wins (R§8: the game is then Finished) or the command cap,
+    /// checking every step.
     /// </summary>
     private static (GameState Final, Tally Tally) Play(GameState start, long choiceSeed, List<GameEvent>? history = null)
     {
@@ -280,7 +282,7 @@ public sealed class CardConservationTests
 
         AssertTheFiftyCardsAreSomewhere(state);
 
-        for (var step = 0; step < MaxCommands && state.Participants.Count(p => !p.Eliminated) > 1; step++)
+        for (var step = 0; step < MaxCommands && state.Phase != GamePhase.Finished; step++)
         {
             var command = NextCommand(state, choices);
 
@@ -291,6 +293,7 @@ public sealed class CardConservationTests
             tally.Commands++;
 
             Assert.Equal(before.Version + 1, state.Version);
+            VictoryFixtures.AssertVictoryFollowsTheRules(before, transition);
             AssertTheFiftyCardsAreSomewhere(state);
             AssertNoClaimIsEverLost(before, state);
 
@@ -325,9 +328,9 @@ public sealed class CardConservationTests
             Accumulate(total, tally);
         }
 
-        // Measured over these 20 games per size (at most 1200 commands each): 1185-1610 awards, 570-707 premiums, 363-470
-        // trades (171-260 of them forced), 19-20 natural reshuffles. The floors leave a wide margin and still prove that the
-        // sweep exercised the card phase.
+        // Measured over these 20 games per size (at most 1200 commands each; a game that is won, R§8, stops earlier):
+        // 1185-1611 awards, 537-707 premiums, 363-465 trades (171-273 of them forced), 19-20 natural reshuffles. The floors
+        // leave a wide margin and still prove that the sweep exercised the card phase.
         AssertNotVacuous(total, awards: 700, premiums: 350, trades: 200, forcedTrades: 90);
         Assert.True(total.Reshuffles > 5, $"Only {total.Reshuffles} reshuffles in {total.Awards} awards.");
     }

@@ -351,7 +351,8 @@ public sealed class ConquestTests
     [Fact]
     public void R6_ConquestsCanChain_TheConqueredCountryConquersTheNextOne_AndEachCountsInTheTurn()
     {
-        var state = Armies(Arena(9, 1), ("d", 1));
+        // Seat 1 keeps "f": taking c and d does not eliminate it, so the chain does not win the game (R§8).
+        var state = Owners(Armies(Arena(9, 1), ("d", 1)), ("f", 1));
         state = ApplyOk(Conquer(state, "a", "c"), new MoveAfterConquest(0, 3), TinyBoard.Map).State;
         Assert.Equal(1, state.Turn.ConquestsThisTurn);
 

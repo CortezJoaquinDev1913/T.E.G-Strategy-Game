@@ -591,7 +591,7 @@ public sealed class CardPhaseTests
     public void R6_AnInheritedCard_OfACountryTheHeirOwns_PaysItsPremiumAtTheCloseOfThatTurn()
     {
         var before = WithHeld(
-            LastStand(6, 1),
+            ThreeSeats(6, 1), // seat 2 survives the elimination, so the turn can be closed
             1,
             new HeldCard("e", BonusClaimed: true), // seat 1 had cashed it in already...
             new HeldCard("f"));

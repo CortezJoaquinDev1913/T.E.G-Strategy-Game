@@ -114,7 +114,7 @@ public static class Combat
 
         return destination.Armies > outcome.DefenderLosses
             ? Result<Transition, RuleViolation>.Ok(new Transition(fought, events.ToValueArray()))
-            : Result<Transition, RuleViolation>.Ok(Conquest.Take(fought, command, destination.Owner, events));
+            : Result<Transition, RuleViolation>.Ok(Conquest.Take(fought, command, destination.Owner, events, map));
     }
 
     /// <summary>The dice, rolled one after the other from <paramref name="rng"/>, sorted from the highest to the lowest.</summary>

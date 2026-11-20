@@ -5,6 +5,7 @@ using Teg.Domain.Events;
 using Teg.Domain.Rng;
 using Teg.Domain.Rules;
 using Teg.Domain.State;
+using Teg.Domain.Tests.Support;
 using static Teg.Domain.Tests.Support.CombatFixtures;
 using static Teg.Domain.Tests.Support.GameFixtures;
 using static Teg.Domain.Tests.Support.ReinforcementFixtures;
@@ -18,14 +19,15 @@ namespace Teg.Domain.Tests.Combat;
 /// least one army, the armies on the board only went down by exactly the losses of the dice, the cards are all still
 /// somewhere (inheritance moves them, never loses them), a participant is <c>Eliminated</c> if and only if they own no
 /// country, the version grows by one, the RNG advances by the dice rolled, and the conquest counter of the turn counts
-/// the conquests.
+/// the conquests. A conquest that wins the game (R§8) ends the playout, and every step also checks that victory
+/// follows the rules (<c>VictoryFixtures.AssertVictoryFollowsTheRules</c>).
 /// </summary>
 public sealed class ArmyConservationTests
 {
     private const int MaxCommands = 1500;
     private const int CardsInPlay = 12;
 
-    private sealed record Summary(int Attacks, int Conquests, int Eliminations, int Occupations, int RefusedOccupations);
+    private sealed record Summary(int Attacks, int Conquests, int Eliminations, int Occupations, int RefusedOccupations, int Victories);
 
     /// <summary>A dealt game with both placement rounds played: round 1, the first player to attack.</summary>
     private static GameState Dealt(int participants, long seed) =>
@@ -51,12 +53,16 @@ public sealed class ArmyConservationTests
 
     /// <summary>
     /// A game that is nearly over: every defender keeps only its first two countries, the attacker owns the rest with
-    /// 40 armies in each, so the attacker eliminates defenders (and inherits their cards) within a few attacks.
+    /// 40 armies in each, so the attacker eliminates defenders (and inherits their cards) within a few attacks. With four
+    /// participants the rest goes instead to the LAST defender (40 armies in each, so the weak two-country defenders are the
+    /// ones the attacker picks): an attacker with 44 countries would win by the common objective (30) at its first
+    /// conquest, a position no game ever reaches.
     /// </summary>
     private static GameState Endgame(int participants, long seed)
     {
         var state = Lopsided(participants, seed);
         var attacker = state.ActiveSeat;
+        var surplusOwner = participants == 4 ? Enumerable.Range(0, participants).Last(seat => seat != attacker) : attacker;
         var kept = new Dictionary<int, int>();
 
         var territories = state.Territories.Select(t =>
@@ -68,7 +74,7 @@ public sealed class ArmyConservationTests
 
             kept[t.Owner] = kept.GetValueOrDefault(t.Owner) + 1;
 
-            return kept[t.Owner] <= 2 ? t : new TerritoryState(t.Id, attacker, Armies: 40);
+            return kept[t.Owner] <= 2 ? t : new TerritoryState(t.Id, surplusOwner, Armies: 40);
         }).ToValueArray();
 
         return state with { Territories = territories };
@@ -127,6 +133,7 @@ public sealed class ArmyConservationTests
         var state = start;
         var (attacks, conquests, eliminations, occupations, refused) = (0, 0, 0, 0, 0);
         var armiesLost = 0;
+        var victories = 0;
 
         AssertTheBoardIsValid(state, participants);
 
@@ -172,6 +179,8 @@ public sealed class ArmyConservationTests
             AssertTheBoardIsValid(state, participants);
             Assert.Equal(cardsAtTheStart, AllCards(state));
             Assert.All(state.Participants.Where(p => p.Eliminated), p => Assert.Empty(p.Cards));
+            VictoryFixtures.AssertVictoryFollowsTheRules(before, transition);
+            var over = state.Phase == GamePhase.Finished; // the conquest won the game (R§8)
 
             if (command is Attack attack)
             {
@@ -189,7 +198,7 @@ public sealed class ArmyConservationTests
                 eliminations += transition.Events.OfType<ParticipantEliminated>().Count();
                 Assert.Equal(conquests, state.Turn.ConquestsThisTurn);
                 Assert.Equal(
-                    transition.Events.OfType<TerritoryConquered>().Any(),
+                    transition.Events.OfType<TerritoryConquered>().Any() && !over, // a winning conquest has nothing left to decide
                     state.Turn.PendingConquest is not null);
             }
             else
@@ -200,10 +209,15 @@ public sealed class ArmyConservationTests
             }
 
             Assert.Equal(TotalArmies(start) - armiesLost, TotalArmies(state));
-            Assert.Equal((GamePhase.Attack, start.ActiveSeat), (state.Phase, state.ActiveSeat));
+            Assert.Equal((over ? GamePhase.Finished : GamePhase.Attack, start.ActiveSeat), (state.Phase, state.ActiveSeat));
+            if (over)
+            {
+                victories++;
+                break; // the game is over: no more commands
+            }
         }
 
-        return new Summary(attacks, conquests, eliminations, occupations, refused);
+        return new Summary(attacks, conquests, eliminations, occupations, refused, victories);
     }
 
     // ---- sweeps ---------------------------------------------------------------------------------------------
@@ -255,10 +269,15 @@ public sealed class ArmyConservationTests
             total.Add(Play(Endgame(participants, seed), choiceSeed: seed * 15485863));
         }
 
-        // Every playout ends when the defenders are gone or cannot be reached: most of them are eliminated.
-        Assert.True(
-            total.Sum(s => s.Eliminations) >= 25 * (participants - 1) / 2,
-            $"Only {total.Sum(s => s.Eliminations)} eliminations.");
+        // Every playout ends when the defenders are gone (the game is then won, R§8) or cannot be reached: most of them are
+        // eliminated. Measured over these 25 games: 25 eliminations and 25 victories with 2 participants, 50 and 25 with 3; with
+        // 4 participants the 40-army stacks of the last defender wear the attacker down, so 25 eliminations and one victory.
+        var floor = participants == 4 ? 15 : 25 * (participants - 1) / 2;
+        Assert.True(total.Sum(s => s.Eliminations) >= floor, $"Only {total.Sum(s => s.Eliminations)} eliminations.");
+        if (participants < 4)
+        {
+            Assert.Equal(25, total.Sum(s => s.Victories)); // eliminating every defender wins every playout
+        }
     }
 
     [Property(MaxTest = 60)]

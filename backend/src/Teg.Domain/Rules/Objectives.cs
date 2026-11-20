@@ -66,7 +66,8 @@ public static class Objectives
     /// <summary>
     /// Whether owning <paramref name="ownedTerritoryIds"/> fulfils <paramref name="objective"/>. Only occupation objectives
     /// are decided by the countries owned (owning more than the quota is fine). A destruction objective is decided by
-    /// destroying a colour, and "no objective" has nothing to fulfil, so both answer <c>false</c> here.
+    /// destroying a colour (the victory rules look for that kill), and "no objective" and the common objective count
+    /// countries on their own terms (also the victory rules), so all three answer <c>false</c> here.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">An occupation objective outside 1 to 9.</exception>
     public static bool IsFulfilled(Objective objective, IReadOnlySet<string> ownedTerritoryIds, MapDefinition map) =>

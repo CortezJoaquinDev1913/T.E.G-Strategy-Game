@@ -1,6 +1,7 @@
 using Teg.Domain.Collections;
 using Teg.Domain.Commands;
 using Teg.Domain.Events;
+using Teg.Domain.Map;
 using Teg.Domain.State;
 
 namespace Teg.Domain.Rules;
@@ -11,11 +12,12 @@ namespace Teg.Domain.Rules;
 /// <item><see cref="Take"/>: the attack emptied the destination. The country changes owner AT ONCE and the conquering
 /// army (one, taken from the origin) enters it, so no country is ever left without armies and the persisted state is
 /// always valid. The conquest is counted for the turn and left PENDING. If it was the last country of the defender, the
-/// defender is eliminated on the spot and the attacker inherits their cards.</item>
+/// defender is eliminated on the spot, the attacker inherits their cards and the destruction objectives that aimed at
+/// them are settled (<see cref="Victory.FallBack"/>). Then <see cref="Victory.Evaluate"/> decides whether the conquest
+/// won the game: a winning conquest ends the game (and its pending occupation with it).</item>
 /// <item><see cref="Occupy"/>: the attacker decides how many armies the conquered country ends up with (1 to
 /// min(3, armies of the origin before the attack - 1)).</item>
 /// </list>
-/// Nothing here decides victory: that is the business of the victory phase of the change plan.
 /// </summary>
 internal static class Conquest
 {
@@ -29,7 +31,7 @@ internal static class Conquest
     /// Applies the conquest to <paramref name="state"/>, where the attack has already taken the last armies of the
     /// destination, and appends its events to <paramref name="events"/>.
     /// </summary>
-    internal static Transition Take(GameState state, Attack attack, int previousOwner, List<GameEvent> events)
+    internal static Transition Take(GameState state, Attack attack, int previousOwner, List<GameEvent> events, MapDefinition map)
     {
         var territories = state.Territories
             .Select(t => t.Id == attack.From ? t with { Armies = t.Armies - ConqueringArmy }
@@ -54,7 +56,8 @@ internal static class Conquest
             conquered = Eliminate(conquered, attack.Seat, previousOwner, events); // adds its own event
         }
 
-        return new Transition(conquered, events.ToValueArray());
+        // The ownership of countries just changed: the only moment at which somebody can win (R§8).
+        return Victory.Evaluate(new Transition(conquered, events.ToValueArray()), attack.Seat, map);
     }
 
     /// <summary>
@@ -73,7 +76,7 @@ internal static class Conquest
         // owns its country (card phase).
         var received = inherited.Select(card => card with { BonusClaimed = false });
 
-        return state with
+        var handedOver = state with
         {
             Participants = state.Participants
                 .Select(p => p.Seat == eliminated ? p with { Eliminated = true, Cards = ValueArray<HeldCard>.Empty }
@@ -81,6 +84,9 @@ internal static class Conquest
                     : p)
                 .ToValueArray(),
         };
+
+        // R§8: whoever aimed at the colour that just disappeared, without being the one who eliminated it, plays for the common objective.
+        return Victory.FallBack(handedOver, by, eliminated, events);
     }
 
     internal static Result<Transition, RuleViolation> Occupy(GameState state, MoveAfterConquest command)

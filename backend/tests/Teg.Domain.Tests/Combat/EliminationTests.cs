@@ -16,7 +16,10 @@ namespace Teg.Domain.Tests.Combat;
 /// cards (the defender's hand is appended to theirs and emptied); an inherited hand of five or more is NOT forced
 /// mid-turn, it is settled at the attacker's next Refuerzo by the TRADE_REQUIRED rule. The eliminated participant is
 /// skipped by the rotation for ever. Elimination happens when the country is conquered (the conquering army is
-/// already in it), not when the attacker later decides the occupation. Victory is NOT decided here: phase 8 owns it.
+/// already in it), not when the attacker later decides the occupation. Eliminating the LAST opponent ends the game (R§8, victory
+/// rules): a test that needs the game to go on after an elimination uses the three-participant board of
+/// <c>ThreeSeats</c>, where a bystander (seat 2) survives; the tests on <c>LastStand</c> (two participants) pin what is
+/// inherited and flagged, which the winning conquest does as well.
 /// Cards are ids of the <see cref="TinyBoard"/>: a, d are galeones, b, e globos, c, f cañones.
 /// </summary>
 public sealed class EliminationTests
@@ -57,7 +60,7 @@ public sealed class EliminationTests
     [Fact]
     public void R2_ConqueringTheLastCountryOfAParticipant_EliminatesThem_AtTheMomentOfTheConquest()
     {
-        var before = LastStand(6, 1);
+        var before = ThreeSeats(6, 1); // seat 2 survives, so the game goes on and the occupation is left pending
         Assert.False(before.Participants[1].Eliminated);
 
         var transition = ConquerWithEvents(before, "a", "c");
@@ -226,19 +229,31 @@ public sealed class EliminationTests
             TinyBoard.Map);
     }
 
-    // ---- victory is not decided here (phase 8) ---------------------------------------------------------------------
+    // ---- victory (R§8; the rest of its rules are in VictoryTests) ---------------------------------------------------------
 
     /// <summary>
-    /// PHASE-8 STAND-IN, pinned on purpose: eliminating the last opponent does not finish the game yet because victory
-    /// (R§8: Winner, WinReason, Finished) is owned by phase 8 (8.5/8.6). When victory exists, rewrite this test: the
-    /// conquest must end in <see cref="GamePhase.Finished"/> with the attacker as the winner.
+    /// Eliminating the LAST opponent finishes the game: the attacker is the only participant left (it used to be pinned as
+    /// "no victory yet", before the victory rules existed).
     /// </summary>
     [Fact]
-    public void Phase8StandIn_EliminatingTheLastOpponent_DoesNotDecideVictoryYet()
+    public void R8_EliminatingTheLastOpponent_DecidesVictory_TheAttackerWinsByElimination()
     {
         var next = Conquer(LastStand(6, 1), "a", "c");
 
         Assert.True(next.Participants[1].Eliminated);
-        Assert.Equal(GamePhase.Attack, next.Phase); // not Finished: nobody wins until phase 8
+        Assert.Equal(GamePhase.Finished, next.Phase);
+        Assert.Equal(0, next.Winner);
+        Assert.Equal(WinReason.Elimination, next.WinReason);
+    }
+
+    [Fact]
+    public void R8_EliminatingAnOpponentWhileAnotherOneRemains_DoesNotDecideVictory()
+    {
+        var next = Conquer(ThreeSeats(8, 1), "a", "c"); // seat 2 still owns "d"
+
+        Assert.True(next.Participants[1].Eliminated);
+        Assert.Equal(GamePhase.Attack, next.Phase);
+        Assert.Null(next.Winner);
+        Assert.Null(next.WinReason);
     }
 }

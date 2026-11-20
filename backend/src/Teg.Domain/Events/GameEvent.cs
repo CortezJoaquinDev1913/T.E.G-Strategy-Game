@@ -62,6 +62,19 @@ public sealed record TerritoryConquered(int Seat, string From, string To, int Pr
 /// </summary>
 public sealed record ParticipantEliminated(int Eliminated, int By, ValueArray<string> InheritedCards) : GameEvent;
 
+/// <summary>
+/// The destruction objective of <paramref name="Seat"/> became the common one because ANOTHER participant eliminated its target
+/// (R§8). It is history only: the rules call for no announcement, and a UI must not reveal it, as it would reveal the
+/// objective of a participant who keeps it secret.
+/// </summary>
+public sealed record ObjectiveFellBackToCommon(int Seat) : GameEvent;
+
+/// <summary>
+/// <paramref name="Seat"/> won the game (R§8) because of <paramref name="Reason"/>: the game is over, it accepts no more
+/// commands. It is always the LAST event of the action that decided it.
+/// </summary>
+public sealed record GameWon(int Seat, WinReason Reason) : GameEvent;
+
 /// <summary>After a conquest the attacker left <paramref name="Armies"/> armies in total on <paramref name="To"/>, taken from <paramref name="From"/> (R§6).</summary>
 public sealed record ArmiesMovedAfterConquest(int Seat, string From, string To, int Armies) : GameEvent;
 

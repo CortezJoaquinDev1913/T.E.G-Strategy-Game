@@ -53,6 +53,15 @@ public sealed record GameState(
     /// </summary>
     public Deck Deck { get; init; } = Deck.Empty;
 
+    /// <summary>
+    /// The seat that won the game (R§8), or <c>null</c> while it is being played. Set together with <see cref="WinReason"/>
+    /// when the phase becomes <see cref="GamePhase.Finished"/>.
+    /// </summary>
+    public int? Winner { get; init; }
+
+    /// <summary>Why <see cref="Winner"/> won, or <c>null</c> while the game is being played.</summary>
+    public WinReason? WinReason { get; init; }
+
     /// <summary>The round that follows initial placement: no Refuerzo phase, turns are Ataque, Reagrupe, Tarjeta (R§4).</summary>
     public const int HostilitiesRound = 1;
 

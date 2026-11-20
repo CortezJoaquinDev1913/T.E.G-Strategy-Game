@@ -1,5 +1,6 @@
 using Teg.Domain.Collections;
 using Teg.Domain.Commands;
+using Teg.Domain.Events;
 using Teg.Domain.Map;
 using Teg.Domain.Rules;
 using Teg.Domain.State;
@@ -11,8 +12,9 @@ namespace Teg.Domain.Tests.Validation;
 /// <summary>
 /// E4 / R§6: every command is validated before it changes anything. A refusal is a typed
 /// <see cref="RuleViolation"/> with a stable code, and the input state stays exactly (structurally) as it was.
-/// Attack and Regroup are validated here; resolving combat (phase 5) and executing a regroup (phase 6) come later,
-/// so a VALID attack or regroup answers <see cref="RuleViolations.NotImplementedYet"/> and never silently succeeds.
+/// Attack and Regroup are validated here. Resolving a valid attack is the combat phase (CombatTests); executing a
+/// regroup comes with phase 6, so a VALID regroup still answers <see cref="RuleViolations.NotImplementedYet"/> and never
+/// silently succeeds.
 /// </summary>
 public sealed class CommandValidationTests
 {
@@ -356,12 +358,16 @@ public sealed class CommandValidationTests
         }
     }
 
-    // ---- valid attacks and regroups are not resolved yet (documented stand-in) -------------------------------
+    // ---- a valid attack is resolved (see CombatTests); a valid regroup is not executed yet (documented stand-in) ----
 
     [Fact]
-    public void AValidAttack_IsNotResolvedYet_ItAnswersNotImplementedYet_AndNeverSucceedsSilently()
+    public void AValidAttack_IsAccepted_AndResolvedByTheEngine()
     {
-        Reject(RuleViolations.NotImplementedYet, GamePhase.Attack, new Attack(0, "a", "c"));
+        var transition = ApplyOk(TinyBoard.State(GamePhase.Attack), new Attack(0, "a", "c"), TinyBoard.Map);
+
+        Assert.Equal(1, transition.State.Version);
+        var resolved = Assert.Single(transition.Events.OfType<AttackResolved>());
+        Assert.Equal(("a", "c"), (resolved.From, resolved.To));
     }
 
     [Fact]
@@ -387,6 +393,9 @@ public sealed class CommandValidationTests
     [InlineData(RuleViolations.NotEnoughArmies, "NOT_ENOUGH_ARMIES")]
     [InlineData(RuleViolations.WrongPlacementTotal, "WRONG_PLACEMENT_TOTAL")]
     [InlineData(RuleViolations.NotImplementedYet, "NOT_IMPLEMENTED_YET")]
+    [InlineData(RuleViolations.ConquestPending, "CONQUEST_PENDING")]
+    [InlineData(RuleViolations.NoConquestPending, "NO_CONQUEST_PENDING")]
+    [InlineData(RuleViolations.OccupationLimitExceeded, "OCCUPATION_LIMIT_EXCEEDED")]
     public void TheViolationCodes_AreTheStableStringsOfTheApiContract(string code, string expectedLiteral)
     {
         Assert.Equal(expectedLiteral, code);

@@ -122,7 +122,8 @@ internal static class Reinforce
                 "Continent bonus armies can only go to the countries of their continent."));
         }
 
+        // `with`, not a new TurnContext: the rest of the turn context (conquests, pending occupation) must survive.
         return Result<TurnContext, RuleViolation>.Ok(
-            new TurnContext(pool.FreeArmies - fromFree, remainingBonuses.ToValueArray()));
+            pool with { FreeArmies = pool.FreeArmies - fromFree, ContinentPools = remainingBonuses.ToValueArray() });
     }
 }

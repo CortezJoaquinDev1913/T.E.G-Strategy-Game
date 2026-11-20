@@ -21,9 +21,8 @@ public static class GameEngine
             TradeCards trade => Trade.Apply(state, trade, map),
             StartRegroup start => TurnMachine.StartRegroup(state, start),
             EndTurn end => TurnMachine.EndTurn(state, end, map),
-            Attack attack => NotYetImplemented(
-                MoveValidator.ValidateAttack(state, attack, map),
-                "Resolving an attack is not implemented yet."),
+            Attack attack => Combat.Apply(state, attack, map),
+            MoveAfterConquest occupy => Conquest.Occupy(state, occupy),
             Regroup regroup => NotYetImplemented(
                 MoveValidator.ValidateRegroup(state, regroup, map),
                 "Executing a regroup is not implemented yet."),
@@ -39,7 +38,7 @@ public static class GameEngine
     }
 
     /// <summary>
-    /// Stand-in for the commands whose execution belongs to later phases of the change plan (combat, regroup):
+    /// Stand-in for the commands whose execution belongs to later phases of the change plan (regroup):
     /// an invalid command keeps its precise violation; a VALID one is answered with
     /// <see cref="RuleViolations.NotImplementedYet"/>, never with a silent success.
     /// </summary>

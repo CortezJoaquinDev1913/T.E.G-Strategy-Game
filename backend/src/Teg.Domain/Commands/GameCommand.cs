@@ -27,6 +27,14 @@ public sealed record StartRegroup(int Seat) : GameCommand(Seat);
 /// <summary>Attack the enemy country <paramref name="To"/> from the own country <paramref name="From"/> (R§6).</summary>
 public sealed record Attack(int Seat, string From, string To) : GameCommand(Seat);
 
+/// <summary>
+/// Decides the occupation of a country just conquered (R§6): the conquered country ends up with
+/// <paramref name="Armies"/> armies (1 to min(3, armies of the origin before the attack - 1)), taken from the origin
+/// of the conquering attack, which keeps at least one. The conquering army is already in the country, so this is the
+/// TOTAL left there. It is the only command accepted while a conquest is pending.
+/// </summary>
+public sealed record MoveAfterConquest(int Seat, int Armies) : GameCommand(Seat);
+
 /// <summary>Move <paramref name="Armies"/> from the own country <paramref name="From"/> to the own country <paramref name="To"/> (R§6).</summary>
 public sealed record Regroup(int Seat, string From, string To, int Armies) : GameCommand(Seat);
 

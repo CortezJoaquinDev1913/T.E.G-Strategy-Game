@@ -40,7 +40,11 @@ public sealed record GameState(
     ValueArray<Participant> Participants,
     ValueArray<TerritoryState> Territories)
 {
-    /// <summary>The reinforcements still to be placed in the current Refuerzo phase; <see cref="TurnContext.None"/> otherwise.</summary>
+    /// <summary>
+    /// What belongs to the current turn: the reinforcements still to be placed in Refuerzo, and in Ataque the conquests
+    /// made so far and the occupation pending. Created afresh when each turn starts (so counters begin from zero);
+    /// <see cref="TurnContext.None"/> when there is nothing to carry.
+    /// </summary>
     public TurnContext Turn { get; init; } = TurnContext.None;
 
     /// <summary>Traded cards (country ids), oldest first. The draw pile arrives with the card phase.</summary>

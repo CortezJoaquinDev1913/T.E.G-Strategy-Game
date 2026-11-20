@@ -69,10 +69,18 @@ public static class RuleViolations
     /// <summary>The three cards are neither all of one symbol nor all of different symbols (R§7).</summary>
     public const string InvalidCardCombination = "INVALID_CARD_COMBINATION";
 
+    /// <summary>A conquest is waiting for the attacker's decision: only <c>MoveAfterConquest</c> is accepted now (R§6).</summary>
+    public const string ConquestPending = "CONQUEST_PENDING";
+
+    /// <summary>Armies were moved after a conquest, but there is no conquest waiting for them (R§6).</summary>
+    public const string NoConquestPending = "NO_CONQUEST_PENDING";
+
+    /// <summary>More than three armies asked for the conquered country: at most 3 can move in after a conquest (R§6).</summary>
+    public const string OccupationLimitExceeded = "OCCUPATION_LIMIT_EXCEEDED";
+
     /// <summary>
-    /// The command is valid, but the engine cannot execute it yet. Attack resolution arrives with the combat
-    /// phase and regroup execution with the regroup phase of the change plan, which replace this answer.
-    /// It is never a silent success.
+    /// The command is valid, but the engine cannot execute it yet. Regroup execution arrives with the regroup phase
+    /// of the change plan, which replaces this answer. It is never a silent success.
     /// </summary>
     public const string NotImplementedYet = "NOT_IMPLEMENTED_YET";
 }

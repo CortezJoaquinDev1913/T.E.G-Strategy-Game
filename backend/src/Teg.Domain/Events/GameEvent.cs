@@ -24,6 +24,34 @@ public sealed record ReinforcementsPlaced(int Seat, ValueArray<ArmyPlacement> Pl
 /// <summary>Three cards were traded for <paramref name="Armies"/> armies (R§7); the cards went to the discard pile.</summary>
 public sealed record CardsTraded(int Seat, ValueArray<string> Cards, int Armies) : GameEvent;
 
+/// <summary>
+/// An attack was fought (R§6). Both dice lists are SORTED FROM THE HIGHEST DIE TO THE LOWEST, the order they are compared
+/// in; they were rolled attacker first, then defender. Each lost pair cost its loser one army.
+/// </summary>
+public sealed record AttackResolved(
+    int Seat,
+    string From,
+    string To,
+    ValueArray<int> AttackerDice,
+    ValueArray<int> DefenderDice,
+    int AttackerLosses,
+    int DefenderLosses) : GameEvent;
+
+/// <summary>
+/// The attack emptied <paramref name="To"/>: it now belongs to <paramref name="Seat"/> (its conquering army is already
+/// there) and the occupation is pending (R§6). <paramref name="PreviousOwner"/> is who lost it.
+/// </summary>
+public sealed record TerritoryConquered(int Seat, string From, string To, int PreviousOwner) : GameEvent;
+
+/// <summary>
+/// <paramref name="Eliminated"/> lost their last country to <paramref name="By"/>, who inherits
+/// <paramref name="InheritedCards"/> (their hand, which is now empty) (R§6).
+/// </summary>
+public sealed record ParticipantEliminated(int Eliminated, int By, ValueArray<string> InheritedCards) : GameEvent;
+
+/// <summary>After a conquest the attacker left <paramref name="Armies"/> armies in total on <paramref name="To"/>, taken from <paramref name="From"/> (R§6).</summary>
+public sealed record ArmiesMovedAfterConquest(int Seat, string From, string To, int Armies) : GameEvent;
+
 /// <summary>The active participant moved on to <paramref name="To"/> inside their own turn.</summary>
 public sealed record PhaseChanged(int Seat, GamePhase From, GamePhase To) : GameEvent;
 

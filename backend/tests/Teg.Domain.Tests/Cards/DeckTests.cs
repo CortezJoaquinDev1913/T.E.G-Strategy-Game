@@ -102,10 +102,25 @@ public sealed class DeckTests
             var expectedDeck = Map.Territories.Select(t => t.Id).ToArray();
             replay.Rng.Shuffle(expectedDeck); // the very next draws of the generator after the deal
 
+            var afterTheDeck = replay.Rng.State;
+
             var state = Deal(participants, seed);
 
             Assert.Equal(expectedDeck, state.Deck.Draw.ToArray());
-            Assert.Equal(replay.Rng.State, state.Rng); // and the state carries the generator after the deck shuffle
+
+            // The state carries the generator after the deck shuffle... and, with four participants only, after the draw of the
+            // secret objectives (R§8), which comes LAST: one shuffle of the fifteen objective numbers. With two or three
+            // participants nothing is drawn after the deck, so the generator is exactly where the deck shuffle left it.
+            if (participants == 4)
+            {
+                replay.Rng.Shuffle(Enumerable.Range(1, 15).ToArray());
+                Assert.NotEqual(afterTheDeck, state.Rng);
+                Assert.Equal(replay.Rng.State, state.Rng);
+            }
+            else
+            {
+                Assert.Equal(afterTheDeck, state.Rng);
+            }
         }
     }
 

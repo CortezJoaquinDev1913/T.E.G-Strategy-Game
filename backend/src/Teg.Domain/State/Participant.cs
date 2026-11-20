@@ -38,4 +38,10 @@ public sealed record Participant(int Seat, string Name, ParticipantKind Kind, Pl
 
     /// <summary>How many trades this participant has made in the whole game: it sets the next trade's value (R§7).</summary>
     public int TradesDone { get; init; }
+
+    /// <summary>
+    /// The secret objective (R§8), fixed when the game is created. <see cref="Objective.None"/> unless the game has four
+    /// participants (a hand-built participant has none either).
+    /// </summary>
+    public Objective Objective { get; init; } = Objective.None;
 }

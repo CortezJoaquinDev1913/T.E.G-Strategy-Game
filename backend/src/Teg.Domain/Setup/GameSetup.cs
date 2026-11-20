@@ -1,6 +1,7 @@
 using Teg.Domain.Collections;
 using Teg.Domain.Map;
 using Teg.Domain.Rng;
+using Teg.Domain.Rules;
 using Teg.Domain.State;
 
 namespace Teg.Domain.Setup;
@@ -45,10 +46,11 @@ public static class GameSetup
         var ranking = InitialRanking.Determine(options.Participants.Count, rng.RollDie);
         var territories = DealCountries(map, ranking, rng);
         var deck = ShuffleDeck(map, rng); // AFTER the deal: its draws come last, so the deal of a seed never changes
+        var objectives = DrawObjectives(options.Participants, territories, map, rng); // AFTER the deck, for the same reason
 
         return Result<GameState, RuleViolation>.Ok(new GameState(
             Version: 0,
-            Rng: rng.State,
+            Rng: rng.State, // the generator after ALL the draws of the creation
             Phase: GamePhase.InitialPlacement,
             PlacementRound: 1,
             Round: 0,
@@ -56,12 +58,36 @@ public static class GameSetup
             ActiveSeat: ranking[0],
             Ranking: ranking.ToValueArray(),
             Participants: options.Participants
-                .Select((setup, seat) => new Participant(seat, setup.Name, setup.Kind, setup.Color))
+                .Select((setup, seat) => new Participant(seat, setup.Name, setup.Kind, setup.Color) { Objective = objectives[seat] })
                 .ToValueArray(),
             Territories: territories)
         {
             Deck = deck,
         });
+    }
+
+    /// <summary>
+    /// The secret objectives (R§3, R§8): one each for a game of four participants, drawn from the fifteen with the same
+    /// seeded generator, right after the deck shuffle, so that nothing drawn before ever changes. Each participant's
+    /// dealt countries are the ones an objective is checked against. With two or three participants nothing is drawn and
+    /// nobody has a secret objective (their only goal is the common one).
+    /// </summary>
+    private static IReadOnlyList<Objective> DrawObjectives(
+        IReadOnlyList<ParticipantSetup> participants,
+        ValueArray<TerritoryState> territories,
+        MapDefinition map,
+        SeededRng rng)
+    {
+        if (participants.Count != Objectives.SecretObjectiveParticipants)
+        {
+            return participants.Select(_ => Objective.None).ToArray();
+        }
+
+        var owned = participants
+            .Select((_, seat) => (IReadOnlySet<string>)territories.Where(t => t.Owner == seat).Select(t => t.Id).ToHashSet())
+            .ToArray();
+
+        return Objectives.Assign(participants.Select(p => p.Color).ToArray(), owned, Objectives.DrawSequence(rng), map);
     }
 
     /// <summary>

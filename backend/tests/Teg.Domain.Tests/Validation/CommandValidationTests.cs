@@ -73,8 +73,7 @@ public sealed class CommandValidationTests
     [InlineData(CommandKind.Regroup, GamePhase.Attack)]
     [InlineData(CommandKind.Regroup, GamePhase.Card)]
     [InlineData(CommandKind.EndTurn, GamePhase.InitialPlacement)]
-    [InlineData(CommandKind.EndTurn, GamePhase.Reinforcement)]
-    [InlineData(CommandKind.EndTurn, GamePhase.Card)]
+    [InlineData(CommandKind.EndTurn, GamePhase.Card)] // from Refuerzo it is ARMIES_PENDING, see ReinforcementTests
     public void ACommandOutsideItsPhase_IsRejectedAsWrongPhase(CommandKind kind, GamePhase phase)
     {
         Reject(RuleViolations.WrongPhase, phase, CommandOf(kind, seat: 0));

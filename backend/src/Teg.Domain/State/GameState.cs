@@ -40,6 +40,12 @@ public sealed record GameState(
     ValueArray<Participant> Participants,
     ValueArray<TerritoryState> Territories)
 {
+    /// <summary>The reinforcements still to be placed in the current Refuerzo phase; <see cref="TurnContext.None"/> otherwise.</summary>
+    public TurnContext Turn { get; init; } = TurnContext.None;
+
+    /// <summary>Traded cards (country ids), oldest first. The draw pile arrives with the card phase.</summary>
+    public ValueArray<string> Discard { get; init; } = ValueArray<string>.Empty;
+
     /// <summary>The round that follows initial placement: no Refuerzo phase, turns are Ataque, Reagrupe, Tarjeta (R§4).</summary>
     public const int HostilitiesRound = 1;
 

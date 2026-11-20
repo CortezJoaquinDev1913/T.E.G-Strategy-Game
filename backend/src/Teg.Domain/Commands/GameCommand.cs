@@ -12,6 +12,15 @@ public abstract record GameCommand(int Seat);
 /// <summary>Initial placement (R§3): the whole pool of the current round, distributed over own countries.</summary>
 public sealed record PlaceInitialArmies(int Seat, ValueArray<ArmyPlacement> Placements) : GameCommand(Seat);
 
+/// <summary>
+/// Places part (or all) of the pending reinforcements of the Refuerzo phase on own countries (R§5). It can be issued
+/// several times: the phase moves on to Ataque by itself when the last pending army is placed.
+/// </summary>
+public sealed record PlaceReinforcements(int Seat, ValueArray<ArmyPlacement> Placements) : GameCommand(Seat);
+
+/// <summary>Trades three cards held by the participant (ids of their countries) for armies, in Refuerzo (R§7).</summary>
+public sealed record TradeCards(int Seat, ValueArray<string> Cards) : GameCommand(Seat);
+
 /// <summary>Leaves Ataque for Reagrupe: attacking is over for this turn (R§6). Irreversible.</summary>
 public sealed record StartRegroup(int Seat) : GameCommand(Seat);
 

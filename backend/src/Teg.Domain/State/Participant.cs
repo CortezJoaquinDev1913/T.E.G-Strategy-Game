@@ -1,3 +1,5 @@
+using Teg.Domain.Collections;
+
 namespace Teg.Domain.State;
 
 /// <summary>Who controls a participant. Bots use exactly the same actions and validations as humans (R§2).</summary>
@@ -26,4 +28,14 @@ public enum PlayerColor
 /// The participant lost every country (R§2). They own nothing, are skipped in the rotation for ever, and the
 /// flag never goes back to <c>false</c>.
 /// </param>
-public sealed record Participant(int Seat, string Name, ParticipantKind Kind, PlayerColor Color, bool Eliminated = false);
+public sealed record Participant(int Seat, string Name, ParticipantKind Kind, PlayerColor Color, bool Eliminated = false)
+{
+    /// <summary>
+    /// The country cards in hand (R§7): a card is identified by its country id, its symbol comes from the map.
+    /// Cards are dealt by the card phase; here they are only traded.
+    /// </summary>
+    public ValueArray<string> Cards { get; init; } = ValueArray<string>.Empty;
+
+    /// <summary>How many trades this participant has made in the whole game: it sets the next trade's value (R§7).</summary>
+    public int TradesDone { get; init; }
+}

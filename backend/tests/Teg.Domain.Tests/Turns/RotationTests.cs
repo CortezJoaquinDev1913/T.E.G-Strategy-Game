@@ -1,3 +1,4 @@
+using Teg.Domain.Collections;
 using Teg.Domain.Commands;
 using Teg.Domain.Events;
 using Teg.Domain.Rules;
@@ -16,18 +17,22 @@ namespace Teg.Domain.Tests.Turns;
 public sealed class RotationTests
 {
     /// <summary>
-    /// Ends the turn of the active participant. A turn that opens with Refuerzo is first moved to Ataque by hand:
-    /// placing the reinforcements is phase 4, so this stands in for it until then.
+    /// Ends the turn of the active participant. A turn that opens with Refuerzo must first place the whole pool
+    /// (R§5), which is done here with a real <see cref="PlaceReinforcements"/> command.
     /// </summary>
     private static GameState FinishTurn(GameState state)
     {
         if (state.Phase == GamePhase.Reinforcement)
         {
-            state = state with { Phase = GamePhase.Attack };
+            state = PlaceWholePool(state);
         }
 
         return ApplyOk(state, new EndTurn(state.ActiveSeat)).State;
     }
+
+    /// <summary>The pool announced when a turn opens with Refuerzo, for a participant without a whole continent.</summary>
+    private static ReinforcementPoolComputed PoolOf(int seat, int armies) =>
+        new(seat, armies, ValueArray<ContinentPool>.Empty);
 
     /// <summary>Who is active and in which round, at the start and after each of <paramref name="turns"/> ended turns.</summary>
     private static (int Seat, int Round)[] Walk(GameState state, int turns)
@@ -102,8 +107,10 @@ public sealed class RotationTests
             new PhaseChanged(0, GamePhase.Attack, GamePhase.Card),
             new TurnEnded(0),
             new TurnStarted(1, round, GamePhase.Reinforcement),
+            PoolOf(1, armies: 8), // seat 1 owns 17 countries: 17 / 2 = 8
         ];
         Assert.Equal(expected, ended.Events.ToArray());
+        Assert.Equal(Pool(8), ended.State.Turn);
         Assert.Equal(GamePhase.Reinforcement, ended.State.Phase);
         Assert.Equal(round, ended.State.Round);
         Assert.False(ended.State.IsHostilitiesRound);
@@ -122,6 +129,7 @@ public sealed class RotationTests
             new TurnEnded(2),
             new RoundAdvanced(2),
             new TurnStarted(0, Round: 2, GamePhase.Reinforcement),
+            PoolOf(0, armies: 8), // seat 0 owns 17 countries
         ];
         Assert.Equal(expected, ended.Events.ToArray());
         Assert.Equal((0, 2, GamePhase.Reinforcement), (ended.State.ActiveSeat, ended.State.Round, ended.State.Phase));
@@ -135,7 +143,9 @@ public sealed class RotationTests
 
         var next = ApplyOk(state, new EndTurn(0)).State;
 
-        Assert.Equal(state with { ActiveSeat = 1, Phase = GamePhase.Reinforcement, Version = 1 }, next);
+        Assert.Equal(
+            state with { ActiveSeat = 1, Phase = GamePhase.Reinforcement, Version = 1, Turn = Pool(8) },
+            next);
     }
 
     // ---- rotation -----------------------------------------------------------------------------------
@@ -199,6 +209,7 @@ public sealed class RotationTests
             new TurnEnded(2),
             new RoundAdvanced(2), // the round ends with C: nobody waits for B
             new TurnStarted(0, Round: 2, GamePhase.Reinforcement),
+            PoolOf(0, armies: 12), // A and C share the board: 25 countries each
         ];
         Assert.Equal(expectedSecond, second.Events.ToArray());
     }

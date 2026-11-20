@@ -16,42 +16,20 @@ internal static class InitialPlacement
     internal static Result<Transition, RuleViolation> Apply(GameState state, PlaceInitialArmies command)
     {
         var violation = CommandGuards.Check(state, command, GamePhase.InitialPlacement)
-            ?? ValidatePlacements(state, command);
+            ?? ArmyPlacements.ValidateEntries(state, command.Seat, command.Placements)
+            ?? ValidateTotal(state, command);
         if (violation is not null)
         {
             return Result<Transition, RuleViolation>.Fail(violation);
         }
 
-        var placed = state with { Territories = AddArmies(state.Territories, command.Placements) };
+        var placed = state with { Territories = ArmyPlacements.AddTo(state.Territories, command.Placements) };
 
         return Result<Transition, RuleViolation>.Ok(PassTheTurn(placed, command));
     }
 
-    private static RuleViolation? ValidatePlacements(GameState state, PlaceInitialArmies command)
+    private static RuleViolation? ValidateTotal(GameState state, PlaceInitialArmies command)
     {
-        foreach (var placement in command.Placements)
-        {
-            var territory = state.FindTerritory(placement.TerritoryId);
-            if (territory is null)
-            {
-                return new RuleViolation(
-                    RuleViolations.UnknownTerritory,
-                    $"The board has no country '{placement.TerritoryId}'.");
-            }
-
-            if (territory.Owner != command.Seat)
-            {
-                return new RuleViolation(
-                    RuleViolations.TerritoryNotOwned,
-                    $"{placement.TerritoryId} does not belong to seat {command.Seat}.");
-            }
-        }
-
-        if (command.Placements.Any(p => p.Armies < 1))
-        {
-            return new RuleViolation(RuleViolations.InvalidArmyCount, "Every placement needs at least one army.");
-        }
-
         var pool = GameSetup.PlacementPools(state.Participants.Count)[state.PlacementRound - 1];
         var total = command.Placements.Sum(p => (long)p.Armies); // long: absurd counts must be refused, not overflow
         if (total != pool)
@@ -62,19 +40,6 @@ internal static class InitialPlacement
         }
 
         return null;
-    }
-
-    private static ValueArray<TerritoryState> AddArmies(
-        ValueArray<TerritoryState> territories,
-        ValueArray<ArmyPlacement> placements)
-    {
-        var added = placements
-            .GroupBy(p => p.TerritoryId)
-            .ToDictionary(group => group.Key, group => group.Sum(p => p.Armies));
-
-        return territories
-            .Select(t => added.TryGetValue(t.Id, out var armies) ? t with { Armies = t.Armies + armies } : t)
-            .ToValueArray();
     }
 
     /// <summary>The turn goes to the next participant; after the last of a round, to the first player of the next stage.</summary>

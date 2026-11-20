@@ -45,6 +45,30 @@ public static class RuleViolations
     /// <summary>The placed armies do not add up to the pool of the initial placement round (R§3).</summary>
     public const string WrongPlacementTotal = "WRONG_PLACEMENT_TOTAL";
 
+    /// <summary>The turn cannot end from Refuerzo: reinforcements are still to be placed (R§5).</summary>
+    public const string ArmiesPending = "ARMIES_PENDING";
+
+    /// <summary>Five or more cards in hand: a trade is mandatory before any reinforcement can be placed (R§7).</summary>
+    public const string TradeRequired = "TRADE_REQUIRED";
+
+    /// <summary>More reinforcements placed than the pool still holds (R§5).</summary>
+    public const string ReinforcementsExceeded = "REINFORCEMENTS_EXCEEDED";
+
+    /// <summary>The armies of a continent bonus must go to that continent (R§5.2).</summary>
+    public const string ContinentBonusMisplaced = "CONTINENT_BONUS_MISPLACED";
+
+    /// <summary>A trade names a number of cards other than three (R§7).</summary>
+    public const string InvalidCardCount = "INVALID_CARD_COUNT";
+
+    /// <summary>A trade names the same card more than once (R§7).</summary>
+    public const string DuplicateCard = "DUPLICATE_CARD";
+
+    /// <summary>A card named in a trade is not in the participant's hand (R§7).</summary>
+    public const string CardNotInHand = "CARD_NOT_IN_HAND";
+
+    /// <summary>The three cards are neither all of one symbol nor all of different symbols (R§7).</summary>
+    public const string InvalidCardCombination = "INVALID_CARD_COMBINATION";
+
     /// <summary>
     /// The command is valid, but the engine cannot execute it yet. Attack resolution arrives with the combat
     /// phase and regroup execution with the regroup phase of the change plan, which replace this answer.

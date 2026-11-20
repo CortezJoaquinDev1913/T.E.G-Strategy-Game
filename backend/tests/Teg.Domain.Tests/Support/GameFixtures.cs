@@ -124,6 +124,33 @@ internal static class GameFixtures
         return state;
     }
 
+    /// <summary>A reinforcement pool: <paramref name="free"/> armies for any own country plus one bonus per continent (R§5).</summary>
+    public static TurnContext Pool(int free, params (string Continent, int Armies)[] continents) =>
+        new(free, continents.Select(c => new ContinentPool(c.Continent, c.Armies)).ToValueArray());
+
+    public static PlaceReinforcements Reinforcing(int seat, params (string Territory, int Armies)[] placements) =>
+        new(seat, placements.Select(p => new ArmyPlacement(p.Territory, p.Armies)).ToValueArray());
+
+    public static TradeCards Trading(int seat, params string[] cards) => new(seat, cards.ToValueArray());
+
+    /// <summary>
+    /// The active participant places the entire pending pool in ONE command: every continent bonus on the first
+    /// country of that continent (the participant owns all of them), the free armies on their first own country.
+    /// </summary>
+    public static GameState PlaceWholePool(GameState state, MapDefinition? map = null)
+    {
+        var board = map ?? RealMap;
+        var placements = state.Turn.ContinentPools
+            .Select(pool => (board.Continents.Single(c => c.Id == pool.ContinentId).TerritoryIds[0], pool.Armies))
+            .ToList();
+        if (state.Turn.FreeArmies > 0)
+        {
+            placements.Add((OwnedBy(state, state.ActiveSeat)[0], state.Turn.FreeArmies));
+        }
+
+        return ApplyOk(state, Reinforcing(state.ActiveSeat, placements.ToArray()), board).State;
+    }
+
     public static string[] OwnedBy(GameState state, int seat) =>
         state.Territories.Where(t => t.Owner == seat).Select(t => t.Id).ToArray();
 

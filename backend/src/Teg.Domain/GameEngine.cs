@@ -17,8 +17,10 @@ public static class GameEngine
         var outcome = command switch
         {
             PlaceInitialArmies place => InitialPlacement.Apply(state, place),
+            PlaceReinforcements reinforce => Reinforce.Place(state, reinforce, map),
+            TradeCards trade => Trade.Apply(state, trade, map),
             StartRegroup start => TurnMachine.StartRegroup(state, start),
-            EndTurn end => TurnMachine.EndTurn(state, end),
+            EndTurn end => TurnMachine.EndTurn(state, end, map),
             Attack attack => NotYetImplemented(
                 MoveValidator.ValidateAttack(state, attack, map),
                 "Resolving an attack is not implemented yet."),

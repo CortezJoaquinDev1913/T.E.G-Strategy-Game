@@ -1,6 +1,7 @@
 using Teg.Domain.Collections;
 using Teg.Domain.Commands;
 using Teg.Domain.Events;
+using Teg.Domain.Map;
 using Teg.Domain.State;
 
 namespace Teg.Domain.Rules;
@@ -26,13 +27,24 @@ internal static class TurnMachine
             new GameEvent[] { new PhaseChanged(command.Seat, GamePhase.Attack, GamePhase.Regroup) }.ToValueArray()));
     }
 
-    /// <summary>Allowed from Ataque (Reagrupe is skipped) and from Reagrupe; never from Refuerzo, which must be completed.</summary>
-    internal static Result<Transition, RuleViolation> EndTurn(GameState state, EndTurn command)
+    /// <summary>
+    /// Allowed from Ataque (Reagrupe is skipped) and from Reagrupe. From Refuerzo it is refused with
+    /// <see cref="RuleViolations.ArmiesPending"/>: that phase ends by itself, once everything is placed (R§5).
+    /// When the next turn opens with Refuerzo, its pool is computed here, from the board as it stands.
+    /// </summary>
+    internal static Result<Transition, RuleViolation> EndTurn(GameState state, EndTurn command, MapDefinition map)
     {
-        var violation = CommandGuards.Check(state, command, GamePhase.Attack, GamePhase.Regroup);
+        var violation = CommandGuards.Check(state, command, GamePhase.Reinforcement, GamePhase.Attack, GamePhase.Regroup);
         if (violation is not null)
         {
             return Result<Transition, RuleViolation>.Fail(violation);
+        }
+
+        if (state.Phase == GamePhase.Reinforcement)
+        {
+            return Result<Transition, RuleViolation>.Fail(new RuleViolation(
+                RuleViolations.ArmiesPending,
+                $"{state.Turn.PendingArmies} reinforcements are still to be placed: the turn cannot end before."));
         }
 
         var (next, wrapped) = NextLivingSeat(state);
@@ -52,8 +64,15 @@ internal static class TurnMachine
 
         events.Add(new TurnStarted(next, round, opening));
 
+        var pool = TurnContext.None;
+        if (opening == GamePhase.Reinforcement)
+        {
+            pool = Reinforce.ComputePool(state, next, map);
+            events.Add(new ReinforcementPoolComputed(next, pool.FreeArmies, pool.ContinentPools));
+        }
+
         return Result<Transition, RuleViolation>.Ok(new Transition(
-            state with { ActiveSeat = next, Round = round, Phase = opening },
+            state with { ActiveSeat = next, Round = round, Phase = opening, Turn = pool },
             events.ToValueArray()));
     }
 

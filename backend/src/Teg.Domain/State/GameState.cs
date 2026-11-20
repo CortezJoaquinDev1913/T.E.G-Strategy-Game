@@ -18,6 +18,7 @@ public enum GamePhase
 /// Immutable snapshot of a game. Every collection has value equality, so two states built independently
 /// from the same seed and commands are equal (E10).
 /// </summary>
+/// <param name="Version">Monotonic counter: 0 after the deal, +1 for every command the engine applies.</param>
 /// <param name="Rng">Seed and draws taken so far; enough to rebuild the generator in O(1).</param>
 /// <param name="Phase">Current phase.</param>
 /// <param name="PlacementRound">Initial placement round (1 or 2) while in <see cref="GamePhase.InitialPlacement"/>.</param>
@@ -28,6 +29,7 @@ public enum GamePhase
 /// <param name="Participants">In registration order: index = <see cref="Participant.Seat"/>.</param>
 /// <param name="Territories">One entry per map country, in map order.</param>
 public sealed record GameState(
+    int Version,
     RngState Rng,
     GamePhase Phase,
     int PlacementRound,
@@ -38,9 +40,21 @@ public sealed record GameState(
     ValueArray<Participant> Participants,
     ValueArray<TerritoryState> Territories)
 {
+    /// <summary>The round that follows initial placement: no Refuerzo phase, turns are Ataque, Reagrupe, Tarjeta (R§4).</summary>
+    public const int HostilitiesRound = 1;
+
     /// <summary>Seats in turn order: registration order, circular, starting from <see cref="FirstSeat"/> (R§2, R§3).</summary>
     public IReadOnlyList<int> TableOrder =>
         Enumerable.Range(0, Participants.Count)
             .Select(offset => (FirstSeat + offset) % Participants.Count)
             .ToArray();
+
+    /// <summary>Index of <paramref name="seat"/> in <see cref="TableOrder"/>: 0 is the first player.</summary>
+    public int TablePosition(int seat) => (seat - FirstSeat + Participants.Count) % Participants.Count;
+
+    /// <summary>True during the first round of play, where turns open in Ataque instead of Refuerzo (R§4).</summary>
+    public bool IsHostilitiesRound => Round == HostilitiesRound;
+
+    /// <summary>The country with this id, or <c>null</c> when the board has no such country.</summary>
+    public TerritoryState? FindTerritory(string id) => Territories.FirstOrDefault(t => t.Id == id);
 }

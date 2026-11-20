@@ -46,6 +46,7 @@ public static class GameSetup
         var territories = DealCountries(map, ranking, rng);
 
         return Result<GameState, RuleViolation>.Ok(new GameState(
+            Version: 0,
             Rng: rng.State,
             Phase: GamePhase.InitialPlacement,
             PlacementRound: 1,

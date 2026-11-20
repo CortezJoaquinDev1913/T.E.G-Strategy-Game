@@ -22,4 +22,8 @@ public enum PlayerColor
 /// One player at the table. <paramref name="Seat"/> is the registration index (0-based) and is the stable
 /// identity used everywhere (owners, ranking, active player); table order is seat order, circular (R§2).
 /// </summary>
-public sealed record Participant(int Seat, string Name, ParticipantKind Kind, PlayerColor Color);
+/// <param name="Eliminated">
+/// The participant lost every country (R§2). They own nothing, are skipped in the rotation for ever, and the
+/// flag never goes back to <c>false</c>.
+/// </param>
+public sealed record Participant(int Seat, string Name, ParticipantKind Kind, PlayerColor Color, bool Eliminated = false);

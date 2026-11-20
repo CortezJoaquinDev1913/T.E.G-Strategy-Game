@@ -1,0 +1,47 @@
+using Teg.Domain.Commands;
+using Teg.Domain.Map;
+using Teg.Domain.Rules;
+using Teg.Domain.State;
+
+namespace Teg.Domain;
+
+/// <summary>
+/// The rules engine: <c>Apply(state, command, map)</c> is pure and deterministic. It either refuses the command
+/// with a typed <see cref="RuleViolation"/> (the input state is never touched) or returns the new state with the
+/// events that explain the change. Every accepted command raises <see cref="GameState.Version"/> by one.
+/// </summary>
+public static class GameEngine
+{
+    public static Result<Transition, RuleViolation> Apply(GameState state, GameCommand command, MapDefinition map)
+    {
+        var outcome = command switch
+        {
+            PlaceInitialArmies place => InitialPlacement.Apply(state, place),
+            StartRegroup start => TurnMachine.StartRegroup(state, start),
+            EndTurn end => TurnMachine.EndTurn(state, end),
+            Attack attack => NotYetImplemented(
+                MoveValidator.ValidateAttack(state, attack, map),
+                "Resolving an attack is not implemented yet."),
+            Regroup regroup => NotYetImplemented(
+                MoveValidator.ValidateRegroup(state, regroup, map),
+                "Executing a regroup is not implemented yet."),
+            _ => throw new ArgumentException($"Unknown command {command.GetType().Name}.", nameof(command)),
+        };
+
+        return outcome.IsSuccess
+            ? Result<Transition, RuleViolation>.Ok(outcome.Value with
+            {
+                State = outcome.Value.State with { Version = state.Version + 1 },
+            })
+            : outcome;
+    }
+
+    /// <summary>
+    /// Stand-in for the commands whose execution belongs to later phases of the change plan (combat, regroup):
+    /// an invalid command keeps its precise violation; a VALID one is answered with
+    /// <see cref="RuleViolations.NotImplementedYet"/>, never with a silent success.
+    /// </summary>
+    private static Result<Transition, RuleViolation> NotYetImplemented(RuleViolation? violation, string message) =>
+        Result<Transition, RuleViolation>.Fail(
+            violation ?? new RuleViolation(RuleViolations.NotImplementedYet, message));
+}

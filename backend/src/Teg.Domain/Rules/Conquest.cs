@@ -21,8 +21,17 @@ namespace Teg.Domain.Rules;
 /// </summary>
 internal static class Conquest
 {
+    /// <summary>R§6: at least this many armies stay in a conquered country (the occupation is never empty).</summary>
+    internal const int MinOccupation = 1;
+
     /// <summary>R§6: at most this many armies move into a conquered country.</summary>
     private const int MaxArmiesToMove = 3;
+
+    /// <summary>
+    /// The most armies the attacker can leave in the country just conquered: <c>min(3, armies before the attack - 1)</c>, so the
+    /// origin keeps one. <paramref name="armiesBeforeTheAttack"/> is what the origin and the conquered country hold together.
+    /// </summary>
+    internal static int MaxOccupation(int armiesBeforeTheAttack) => Math.Min(MaxArmiesToMove, armiesBeforeTheAttack - 1);
 
     /// <summary>The army that enters the emptied country together with the conquest.</summary>
     private const int ConqueringArmy = 1;
@@ -134,7 +143,7 @@ internal static class Conquest
     /// <summary>1 to min(3, armies of the origin before the attack - 1): the origin keeps at least one army.</summary>
     private static RuleViolation? Validate(int armies, int armiesBeforeTheAttack)
     {
-        if (armies < 1)
+        if (armies < MinOccupation)
         {
             return new RuleViolation(RuleViolations.InvalidArmyCount, $"At least one army must move in, not {armies}.");
         }

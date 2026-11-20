@@ -85,10 +85,7 @@ internal static class Trade
             return new RuleViolation(RuleViolations.CardNotInHand, $"The card '{missing}' is not in your hand.");
         }
 
-        var symbolsUsed = cards.Select(card => map.Territory(card).Symbol).Distinct().Count();
-        var allSame = symbolsUsed == 1;
-        var allDifferent = symbolsUsed == Enum.GetValues<CardSymbol>().Length;
-        if (!allSame && !allDifferent)
+        if (!IsValidCombination(cards, map))
         {
             return new RuleViolation(
                 RuleViolations.InvalidCardCombination,
@@ -96,5 +93,15 @@ internal static class Trade
         }
 
         return null;
+    }
+
+    /// <summary>R§7: the cards are all of one symbol, or one of each symbol. Shared with the legal-moves query.</summary>
+    internal static bool IsValidCombination(IEnumerable<string> cards, MapDefinition map)
+    {
+        var symbolsUsed = cards.Select(card => map.Territory(card).Symbol).Distinct().Count();
+        var allSame = symbolsUsed == 1;
+        var allDifferent = symbolsUsed == Enum.GetValues<CardSymbol>().Length;
+
+        return allSame || allDifferent;
     }
 }

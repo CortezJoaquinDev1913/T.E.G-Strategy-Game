@@ -8,7 +8,7 @@ namespace Teg.Domain.Rules;
 public static class MoveValidator
 {
     /// <summary>A country must keep one army, so only a country with at least this many can send armies out (R§6).</summary>
-    private const int MinArmiesToMove = 2;
+    internal const int MinArmiesToMove = 2;
 
     /// <summary>Returns the reason the attack is refused, or <c>null</c> when it is allowed.</summary>
     public static RuleViolation? ValidateAttack(GameState state, Attack command, MapDefinition map) =>

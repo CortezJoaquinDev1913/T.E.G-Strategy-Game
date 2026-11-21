@@ -50,6 +50,15 @@ public sealed record TurnContext(int FreeArmies, ValueArray<ContinentPool> Conti
     public ValueArray<RegroupQuota> RegroupQuotas { get; init; } = ValueArray<RegroupQuota>.Empty;
 
     /// <summary>
+    /// How many actions a BOT has taken in this turn (design: the bot cap of 60 per turn). It is data for the Application layer:
+    /// the engine never raises it, it only carries it. It is zero when the turn starts (<c>EndTurn</c> builds a fresh context for
+    /// whoever receives the turn, so it starts from zero for every turn) and it survives every command that does not end the turn
+    /// (the rules copy the context with <c>with</c>). It lives in the saved state so that a bot turn interrupted by a reload resumes
+    /// with the count intact. Initial placement never builds a context (one command per turn): the Application does not count there.
+    /// </summary>
+    public int BotActions { get; init; }
+
+    /// <summary>
     /// How many more armies <paramref name="territoryId"/> may send out in this Reagrupe; zero when it has spent its
     /// quota, when it is not the active participant's, or when the phase has not started.
     /// </summary>
